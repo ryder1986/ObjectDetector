@@ -248,7 +248,7 @@ private:
     }
     void check_point()
     {
-        return ;
+      //  return ;
 
 //        while(1){
 //            this_thread::sleep_for(chrono::seconds(1));
