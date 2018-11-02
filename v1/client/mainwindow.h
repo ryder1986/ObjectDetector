@@ -56,13 +56,20 @@ public:
 namespace Ui {
 class MainWindow;
 }
-
+#ifdef ACTIVEX
 class MainWindow : public QMainWindow,public QAxBindable
+        #else
+class MainWindow : public QMainWindow
+        #endif
 {
     Q_OBJECT
+
+#ifdef ACTIVEX
     Q_CLASSINFO("ClassID",     "{BF16845C-92CD-4AAB-A982-EB9840E74669}")
-     Q_CLASSINFO("InterfaceID", "{616F620B-91C5-4410-A74E-6B81C76FFFE0}")
-     Q_CLASSINFO("EventsID",    "{E1816BBA-BF5D-4A31-9855-D6BA432055FF}")
+    Q_CLASSINFO("InterfaceID", "{616F620B-91C5-4410-A74E-6B81C76FFFE0}")
+    Q_CLASSINFO("EventsID",    "{E1816BBA-BF5D-4A31-9855-D6BA432055FF}")
+#endif
+
 public:
     enum MODE{
         ONE_CAM=1,
@@ -101,47 +108,47 @@ public:
     }
     void handle_output()
     {
-         output_lock.lock();
-         if(output_list.size()){
+        output_lock.lock();
+        if(output_list.size()){
 
-             QByteArray datagram=output_list.first();
-             QString str(datagram.data());
-             JsonPacket pkt(str.toStdString());
-             AppOutputData rst( pkt  );
-             //prt(info,"rst-> %s",rst.data().str().data());
-             if(cfg.CameraData.size()>=rst.CameraIndex){
-                 if(play_mode==ALL_CAM){
-                     int cam_index=rst.CameraIndex;
-                     CameraInputData camera_cfg=cfg.CameraData[cam_index-1];
-                     thread_lock.lock();
-                     //prt(info,"recving cam %d",cam_index);
-                     if(players.size()<cam_index)
-                     {
-                         //prt(info,"recving cam %d, our sz %d ",cam_index,players.size());
+            QByteArray datagram=output_list.first();
+            QString str(datagram.data());
+            JsonPacket pkt(str.toStdString());
+            AppOutputData rst( pkt  );
+            //prt(info,"rst-> %s",rst.data().str().data());
+            if(cfg.CameraData.size()>=rst.CameraIndex){
+                if(play_mode==ALL_CAM){
+                    int cam_index=rst.CameraIndex;
+                    CameraInputData camera_cfg=cfg.CameraData[cam_index-1];
+                    thread_lock.lock();
+                    //prt(info,"recving cam %d",cam_index);
+                    if(players.size()<cam_index)
+                    {
+                        //prt(info,"recving cam %d, our sz %d ",cam_index,players.size());
                         // thread_lock.unlock();
-                         //continue;
-                     }else{
+                        //continue;
+                    }else{
                         PlayerWidget *w= players[cam_index-1];
                         w->set_output_data(rst.CameraOutput);
-                     }
-                     thread_lock.unlock();
-                 }else{
-                     thread_lock.lock();
-                     if(play_index==rst.CameraIndex&&players.size())
-                     {
-                         PlayerWidget *w= players[0];
-                         w->set_output_data(rst.CameraOutput);
-                     }
-                     thread_lock.unlock();
+                    }
+                    thread_lock.unlock();
+                }else{
+                    thread_lock.lock();
+                    if(play_index==rst.CameraIndex&&players.size())
+                    {
+                        PlayerWidget *w= players[0];
+                        w->set_output_data(rst.CameraOutput);
+                    }
+                    thread_lock.unlock();
 
-                 }
-             }else{
-                 prt(info,"server output index %d,out of range(1- %d), make sure you\
-                     loaded the server cfg & camera size >0 ",rst.CameraIndex,cfg.CameraData.size());
-             }
-             output_list.removeAt(0);
-         }
-         output_lock.unlock();
+                }
+            }else{
+                prt(info,"server output index %d,out of range(1- %d), make sure you\
+                    loaded the server cfg & camera size >0 ",rst.CameraIndex,cfg.CameraData.size());
+            }
+            output_list.removeAt(0);
+        }
+        output_lock.unlock();
     }
 
 private slots:
@@ -261,11 +268,11 @@ private slots:
             widget_remove_camera(w);
             w->hide();
 #if 1
-        //    delete w;//TODO: add deleting method
+            //    delete w;//TODO: add deleting method
 #else
-           // std::thread([this,w](){ delete w;}).detach();
+            // std::thread([this,w](){ delete w;}).detach();
             QTimer::singleShot(1000, this, [w] () {delete w;});
-       //     QTimer::singleShot(1000, this, &MainWindow::del_widget,w);
+            //     QTimer::singleShot(1000, this, &MainWindow::del_widget,w);
 #endif
         }
         players.clear();
