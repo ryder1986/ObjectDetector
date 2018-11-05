@@ -10,7 +10,7 @@
 #include "detectregion_data.h"
 using namespace std;
 using namespace cv;
-
+#if 0
 class DummyProcessor:public VideoProcessor
 {
     int loopx;
@@ -61,7 +61,7 @@ public:
     }
 };
 
-
+#endif
 class DetectRegion : public VdData<DetectRegionInputData>
 {
     int tmp;

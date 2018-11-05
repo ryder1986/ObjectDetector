@@ -10,17 +10,23 @@ public:
 
     function <void(Camera *,CameraOutputData)>callback_result;
 public:
-    Camera(CameraInputData cfg,function <void(Camera *,CameraOutputData)>fc):VdData(cfg),quit(false),callback_result(fc)
+    Camera(CameraInputData cfg,function <void(Camera *,CameraOutputData)>fc):
+        VdData(cfg),quit(false),callback_result(fc),frame_rate(0),
+        watch_dog(bind(&Camera::check_point,this))
     {
         for(DetectRegionInputData p:private_data.DetectRegion){
             drs.push_back(new DetectRegion(p));
         }
+
+
         prt(info,"start %s",private_data.Url.data());
         src=new VideoSource(private_data.Url);
+        watch_dog.start(1000);
         start();
     }
     ~Camera()
     {
+        watch_dog.stop();
         prt(info,"exiting %s",private_data.Url.data());
         quit=true;
         if(work_trd->joinable())
@@ -32,6 +38,11 @@ public:
         drs.clear();
         prt(info,"exited %s",private_data.Url.data());
         delete src;
+    }
+    void check_point()
+    {
+        prt(info,"Camera: %s frame_rate %d",src->get_url().data(),frame_rate);
+        frame_rate=0;
     }
 
     void run_process();
@@ -68,6 +79,8 @@ private:
     thread *work_trd;
     int timestamp;
     mutex lock;
+    int frame_rate;
+    Timer1 watch_dog;
 public:
     Mat screenshot;
 };

@@ -248,14 +248,14 @@ private:
     }
     void check_point()
     {
-      //  return ;
+        //  return ;
 
-//        while(1){
-//            this_thread::sleep_for(chrono::seconds(1));
-//        }
+        //        while(1){
+        //            this_thread::sleep_for(chrono::seconds(1));
+        //        }
         int count=dir_count("/ftphome/pic");
-      //  prt(info,"/ftphome/pic pics count %d---->",count);
-       // prt(info,"server camera count %d---->",cms.size());
+        //  prt(info,"/ftphome/pic pics count %d---->",count);
+        // prt(info,"server camera count %d---->",cms.size());
         int left=30;
         if(count>left){
             delete_dir_files("/ftphome/pic",count,left);
@@ -284,17 +284,17 @@ private:
     void get_tis_str(char *buf,char *time, int type)
     {
 
-      //  "INSERT INTO TIS ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `TEType`, `TEPAddr`, `TEVAddr`)\
-      //   VALUES  ( '3', '2018-03-07 17:46:24', '60', '32', '大学城', '12', '12', '21', 'pic_path', 'video_path');"
+        //  "INSERT INTO TIS ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `TEType`, `TEPAddr`, `TEVAddr`)\
+        //   VALUES  ( '3', '2018-03-07 17:46:24', '60', '32', '大学城', '12', '12', '21', 'pic_path', 'video_path');"
 
         sprintf(buf," INSERT INTO TIS ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `TEType`, `TEPAddr`, `TEVAddr`)\
-         VALUES  ( '3', '%s', '60', '32', '大学城', '12', '12', '%d', 'pic_path', 'video_path')",time,type);
+                VALUES  ( '3', '%s', '60', '32', '大学城', '12', '12', '%d', 'pic_path', 'video_path')",time,type);
     }
     void single_insert(EventRegionObjectOutput data,Mat frame)
     {
         //if(mvddata.DriveAwayData.size()>0){
-            if(1){
-                  prt(info,"get incident");
+        if(1){
+            prt(info,"get incident");
             DatabaseInstance &ins=DatabaseInstance::get_instance();
             string user="root";
             string passwd="root";
@@ -322,8 +322,8 @@ private:
     }
     string insert_pic(Mat frame)
     {
-            if(1){
-                  prt(info,"get incident");
+        if(1){
+            prt(info,"get incident");
 
             string user="root";
             string passwd="root";
@@ -347,72 +347,69 @@ private:
 
     string insert_pic_ex(Mat frame,vector <VdPoint> outline,int type,vector <VdPoint> region)
     {
-           string str;
+        string str;
 
-           switch(type){
-            case EventRegion::OVER_SPEED:
-               str.append("OVER_SPEED");
-               break;
-           case EventRegion::REVERSE_DRIVE:
-                 str.append("REVERSE_DRIVE");
-              break;
-           case EventRegion::STOP_INVALID:
-                 str.append("STOP_INVALID");
-              break;
-           case EventRegion::NO_PEDESTRIANTION:
-                 str.append("NO_PEDESTRIANTION");
-              break;
-           case EventRegion::DRIVE_AWAY:
-                 str.append("DRIVE_AWAY");
-              break;
-           case EventRegion::CONGESTION:
-                 str.append("CONGESTION");
-              break;
-           case EventRegion::AbANDON_OBJECT:
-                 str.append("AbANDON_OBJECT");
-              break;
-           default:break;
+        switch(type){
+        case EventRegion::OVER_SPEED:
+            str.append("OVER_SPEED");
+            break;
+        case EventRegion::REVERSE_DRIVE:
+            str.append("REVERSE_DRIVE");
+            break;
+        case EventRegion::STOP_INVALID:
+            str.append("STOP_INVALID");
+            break;
+        case EventRegion::NO_PEDESTRIANTION:
+            str.append("NO_PEDESTRIANTION");
+            break;
+        case EventRegion::DRIVE_AWAY:
+            str.append("DRIVE_AWAY");
+            break;
+        case EventRegion::CONGESTION:
+            str.append("CONGESTION");
+            break;
+        case EventRegion::AbANDON_OBJECT:
+            str.append("AbANDON_OBJECT");
+            break;
+        default:break;
 
-           }
+        }
 
-           putText(frame, str, Point(100,130),CV_FONT_HERSHEY_SIMPLEX,1,Scalar(0,255,255),3,8);
-           VdRect rct= vers_2_rect(region);
-           VdPoint offset(rct.x,rct.y);
-            prt(info," start record rect incident");
-           for(VdPoint p:outline){
-            prt(info," () %d %d)",p.x,p.y);
-           }
-            prt(info," end record rect incident ");
-           prt(info,"offset %d %d",rct.x,rct.y);
-           if(outline.size()==4){
-               for(int i=0;i<outline.size()-1;i++){
-                   VdPoint start=add_point_offset(outline[i],offset);
-                   VdPoint end=add_point_offset(outline[i+1],offset);
-                          line(frame, Point(start.x,start.y),Point( end.x,end.y), Scalar(255, 255 ,0), 3, 8, 0 );
-               }
-               VdPoint start=add_point_offset(outline.front(),offset);
-               VdPoint end=add_point_offset(outline.back(),offset);
+        putText(frame, str, Point(100,130),CV_FONT_HERSHEY_SIMPLEX,1,Scalar(0,255,255),3,8);
+        VdRect rct= vers_2_rect(region);
+        VdPoint offset(rct.x,rct.y);
+        //            prt(info," start record rect incident");
+        //           for(VdPoint p:outline){
+        //            prt(info," () %d %d)",p.x,p.y);
+        //           }
+        //            prt(info," end record rect incident ");
+        //           prt(info,"offset %d %d",rct.x,rct.y);
+        if(outline.size()==4){
+            for(int i=0;i<outline.size()-1;i++){
+                VdPoint start=add_point_offset(outline[i],offset);
+                VdPoint end=add_point_offset(outline[i+1],offset);
                 line(frame, Point(start.x,start.y),Point( end.x,end.y), Scalar(255, 255 ,0), 3, 8, 0 );
+            }
+            VdPoint start=add_point_offset(outline.front(),offset);
+            VdPoint end=add_point_offset(outline.back(),offset);
+            line(frame, Point(start.x,start.y),Point( end.x,end.y), Scalar(255, 255 ,0), 3, 8, 0 );
 
-           }
-            string user="root";
-            string passwd="root";
-            string db="AIPD";
-            string host="localhost";
-            string fn;
-            fn.append("/ftphome/pic/");
+        }
+        string user="root";
+        string passwd="root";
+        string db="AIPD";
+        string host="localhost";
+        string fn;
+        fn.append("/ftphome/pic/");
 
-            stringstream  stream;
-            stream<<get_time_point_ms();
-            fn.append(stream.str());
-            fn.append(".png");
-            imwrite(fn,frame);
-            prt(info,"get pic");
-            stream<<".png";
-            return stream.str();
-
-
-
+        stringstream  stream;
+        stream<<get_time_point_ms();
+        fn.append(stream.str());
+        fn.append(".png");
+        imwrite(fn,frame);
+        prt(info,"get pic");
+        stream<<".png";
+        return stream.str();
     }
     void insert_database(CameraOutputData data,int index,Mat frame)
     {
@@ -425,7 +422,7 @@ private:
             //           / return -1;
         }
         CameraInputData input=cms[index-1]->get_data();
-        #if 0
+#if 0
         for(int i=0;i<data.DetectionResult.size();i++){
             DetectRegionOutputData d=data.DetectionResult[i];
             DetectRegionInputData  id= input.DetectRegion[i];
@@ -442,7 +439,7 @@ private:
                 int new_event_flag[7];
                 memset(new_event_flag,0,7*sizeof(int));
                 for( EventRegionObjectOutput  eo:  mvddata.EventObjects){
-                   new_event_flag[eo.Type-1]++;
+                    new_event_flag[eo.Type-1]++;
                 }
                 for(int k=0;k<7;k++){
                     if(new_event_flag[k]>old_event_flag[k]){
@@ -454,46 +451,46 @@ private:
                         }
 
                     }
-                       old_event_flag[k]=new_event_flag[k];
+                    old_event_flag[k]=new_event_flag[k];
                 }
 
-//                if(mvddata.DriveAwayData.size()>0){
-//                    prt(info,"get incident");
-//                    DatabaseInstance &ins=DatabaseInstance::get_instance();
-//                    string user="root";
-//                    string passwd="root";
-//                    string db="AIPD";
-//                    string host="localhost";
-//                    string fn;
-//                    fn.append("/ftphome/pic/");
+                //                if(mvddata.DriveAwayData.size()>0){
+                //                    prt(info,"get incident");
+                //                    DatabaseInstance &ins=DatabaseInstance::get_instance();
+                //                    string user="root";
+                //                    string passwd="root";
+                //                    string db="AIPD";
+                //                    string host="localhost";
+                //                    string fn;
+                //                    fn.append("/ftphome/pic/");
 
-//                    stringstream  stream;
-//                    stream<<get_time_point_ms();
-//                    fn.append(stream.str());
-//                    fn.append(".png");
-//                    imwrite(fn,frame);
-//                    if(sql_need_connect){
-//                        ins.connect(host,user,passwd,db);
-//                        sql_need_connect=false;
-//                    }
-//                    static char bf[1000];
-//                    memset(bf,0,1000);
-//                    get_tis_str(bf,get_sql_time(),1);
-//                    prt(info,"start qurey");
-//                    ins.query(bf);
-//                      prt(info,"stop qurey");
-//                    ins.query("INSERT INTO TIS \
-//                              ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `TEType`, `TEPAddr`, `TEVAddr`)\
-//                              VALUES\
-//                              ( '3', '2018-03-07 17:46:24', '60', '32', '大学城', '12', '12', '21', 'pic_path', 'video_path');");
+                //                    stringstream  stream;
+                //                    stream<<get_time_point_ms();
+                //                    fn.append(stream.str());
+                //                    fn.append(".png");
+                //                    imwrite(fn,frame);
+                //                    if(sql_need_connect){
+                //                        ins.connect(host,user,passwd,db);
+                //                        sql_need_connect=false;
+                //                    }
+                //                    static char bf[1000];
+                //                    memset(bf,0,1000);
+                //                    get_tis_str(bf,get_sql_time(),1);
+                //                    prt(info,"start qurey");
+                //                    ins.query(bf);
+                //                      prt(info,"stop qurey");
+                //                    ins.query("INSERT INTO TIS \
+                //                              ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `TEType`, `TEPAddr`, `TEVAddr`)\
+                //                              VALUES\
+                //                              ( '3', '2018-03-07 17:46:24', '60', '32', '大学城', '12', '12', '21', 'pic_path', 'video_path');");
 
-//                            ins.query(" INSERT INTO PS ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `PSum`, `PPSum`, `PNSum`, `PDensity`) \
-//                                      VALUES \
-//                                      ('2', '2018-10-17 16:34:07', '90', '1', '沙河西路', '2', '2', '15', '10', '5', '40');");
+                //                            ins.query(" INSERT INTO PS ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `PSum`, `PPSum`, `PNSum`, `PDensity`) \
+                //                                      VALUES \
+                //                                      ('2', '2018-10-17 16:34:07', '90', '1', '沙河西路', '2', '2', '15', '10', '5', '40');");
 
 
-             //   }
-             }
+                //   }
+            }
 
 
 
@@ -502,7 +499,7 @@ private:
             //  mvddata.
 
         }
-        #else
+#else
         for(int i=0;i<data.DetectionResult.size();i++){
             DetectRegionOutputData d=data.DetectionResult[i];
             DetectRegionInputData  id= input.DetectRegion[i];
@@ -510,10 +507,15 @@ private:
             //   prt(info," %s ",id.SelectedProcessor.data());
             if(id.SelectedProcessor==LABEL_PROCESSOR_MVD){
                 MvdProcessorOutputData mvddata(rst);
+                if(mvddata.EventObjects.size())
+                {
+                 prt(info,"camera %d has event",index);
+                }
                 for(EventRegionObjectOutput eo:mvddata.EventObjects){
-                    if(!exist_in_last(eo)){
+
+                    if(!exist_in_last(eo,index)){
                         prt(info," inserting  event %d ",eo.Type);
-                      //  string name= insert_pic(frame);
+                        //  string name= insert_pic(frame);
                         string name= insert_pic_ex(frame,eo.Vers,eo.Type,id.ExpectedAreaVers);
                         string path("/ftphome/pic/");
                         path.append(name);
@@ -522,20 +524,20 @@ private:
 
                     }
                 }
-                last_events.clear();
-                last_events=mvddata.EventObjects;
+                last_events[index-1].clear();
+                last_events[index-1]=mvddata.EventObjects;
                 //outputs[index-1].push_back(mvddata);
                 //vector<MvdProcessorOutputData> &ops=outputs[index-1];
                 //ops.push_back(mvddata);
             }
         }
-        #endif
+#endif
 #endif
 
     }
-    inline bool exist_in_last(EventRegionObjectOutput event)
+    inline bool exist_in_last(EventRegionObjectOutput event,int index)
     {
-        for(EventRegionObjectOutput e:last_events){
+        for(EventRegionObjectOutput e:last_events[index-1]){
             if(e.EventID==event.EventID&&e.Type==event.Type){
                 return true;
             }
@@ -555,25 +557,25 @@ private:
             ins.connect(host,user,passwd,db);
             sql_need_connect=false;
         }
-//        ins.query("INSERT INTO TIS \
-//        ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `TEType`, `TEPAddr`, `TEVAddr`)\
-//           VALUES\
-//        ( '3', '2018-03-07 17:46:24', '60', '32', 'abc', '12', '12', '21', 'pic_path', 'video_path');");
+        //        ins.query("INSERT INTO TIS \
+        //        ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `TEType`, `TEPAddr`, `TEVAddr`)\
+        //           VALUES\
+        //        ( '3', '2018-03-07 17:46:24', '60', '32', 'abc', '12', '12', '21', 'pic_path', 'video_path');");
 
         char buf[1000];memset(buf,0,1000);
 #if 1
         sprintf(buf,"INSERT INTO TIS \
                 ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `TEType`, `TEPAddr`, `TEVAddr`)\
-                   VALUES\
+                VALUES\
                 ( '3', '%s', '60', '32', 'abcde', '12', '12', '%d', '%s', 'video_path');",sql_time,type,pic_path);
         #else
 
-                sprintf(buf,"INSERT INTO TIS \
-                        ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `TEType`, `TEPAddr`, `TEVAddr`)\
-                           VALUES\
-                        ( '3', '%s', '60', '32', 'abcde', '12', '12', '%d', '%s', 'video_path');",get_sql_time(),1,"5678");
+        sprintf(buf,"INSERT INTO TIS \
+                ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `RegionID`, `TEType`, `TEPAddr`, `TEVAddr`)\
+                VALUES\
+                ( '3', '%s', '60', '32', 'abcde', '12', '12', '%d', '%s', 'video_path');",get_sql_time(),1,"5678");
         #endif
-        ins.query(buf);
+                ins.query(buf);
     }
 
     void count_fun1()
@@ -593,7 +595,7 @@ private:
         while(!quit_count){
             if(count_time--==1){
                 prt(info,"time up , start cal ---------------------------->");
-               // lock.lock();
+                // lock.lock();
                 int camera_size=private_data.CameraData.size();
                 for(int loop_cams=0;loop_cams<camera_size;loop_cams++){
                     prt(info,"cam %d",loop_cams);
@@ -613,7 +615,7 @@ private:
                         DatabaseInstance &ins=get_database();
 
                         for(int i=0;i<cam_out.size();i++){
-                                  prt(info,"frame %d",loop_regions);
+                            prt(info,"frame %d",loop_regions);
                             MvdProcessorOutputData tmp=cam_out[i];
                             // tmp.CongestionData
                             for(int j=0;j<tmp.LaneOutputData.size();j++){
@@ -631,13 +633,13 @@ private:
                         }
 
 
-                     }//loop regions
+                    }//loop regions
                 }//loop cams
                 for(int i=0;i<100;i++)
                     outputs[i].clear();
 
-                  count_time=COUNT_SECONDS;
-                    prt(info," stop cal ---------------------------->");
+                count_time=COUNT_SECONDS;
+                prt(info," stop cal ---------------------------->");
             }
 
             this_thread::sleep_for(chrono::microseconds(1000000));
@@ -675,8 +677,8 @@ private:
             sprintf(buf_tmp,"%d",average_speed);
             //  tmp2<<average_speed;
         }else{
-              memset(buf_tmp,0,100);
-                sprintf(buf_tmp,"%d",0);
+            memset(buf_tmp,0,100);
+            sprintf(buf_tmp,"%d",0);
         }
         string vs_ASpeed(buf_tmp);
         string vs_ATime="1";
@@ -687,10 +689,10 @@ private:
         DatabaseInstance &ins=DatabaseInstance::get_instance();
         stringstream stream;
         stream<< "INSERT INTO VS \
-            ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `LaneID`,\
-              `VSum`, `VPSum`, `VNSum`, `VTSum`, `VBSum`, `VCSum`, `VMSum`,\
-              `VKSum`, `ASpeed`, `ATime`, `ASpace`, `AVM`, `AOccupy`,`RState`) VALUES";
-        stream<< "(";
+                 ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `LaneID`,\
+                   `VSum`, `VPSum`, `VNSum`, `VTSum`, `VBSum`, `VCSum`, `VMSum`,\
+                   `VKSum`, `ASpeed`, `ATime`, `ASpace`, `AVM`, `AOccupy`,`RState`) VALUES";
+                 stream<< "(";
 
         INSERT_DB_MEM(vs_record_id) stream<< ",";
         INSERT_DB_MEM(vs_sst) stream<< ",";
@@ -716,7 +718,7 @@ private:
         INSERT_DB_MEM(vs_AVM) stream<< ",";
         INSERT_DB_MEM(vs_AOccupy) stream<< ",";
         INSERT_DB_MEM(vs_RState)
-        stream<< ");";
+                stream<< ");";
 
         prt(info,"%s",stream.str().data());
         if(stream.str().size()>1000){
@@ -745,7 +747,7 @@ private:
     thread *p_count_thread;
     vector <Mat> frames;
     bool quit_count;
-    vector <EventRegionObjectOutput> last_events;
+    vector <EventRegionObjectOutput> last_events[MAX_CAM_NUM];
     vector <MvdProcessorOutputData> outputs[MAX_CAM_NUM];//support 100 cameras
     mutex lock;
 };

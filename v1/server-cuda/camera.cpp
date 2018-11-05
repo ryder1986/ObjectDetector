@@ -8,6 +8,7 @@ void Camera::run_process()
     while(!quit){
         this_thread::sleep_for(chrono::milliseconds(10));
         if(src->get_frame(frame,ts)){
+            frame_rate++;
 #if 0
             for(DetectRegion *r:drs){
                 JsonPacket ret=r->work(frame);
@@ -36,6 +37,7 @@ bool Camera::modify(RequestPkt req)
     int index=req.Index;
     if(index<0||index>drs.size())
         return false;
+    prt(info,"handle camera request %d",req.Operation);
     lock.lock();
     switch (req.Operation) {
     case CameraInputData::OP::CHANGE_URL:
@@ -68,6 +70,7 @@ bool Camera::modify(RequestPkt req)
     }
     case CameraInputData::OP::MODIFY_REGION:
     {
+         prt(info,"modify region %d",index);
         if(index<=0){
             prt(info,"error index %d",index);
             lock.unlock();

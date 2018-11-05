@@ -171,12 +171,15 @@ private:
     void check_point()
     {
         lock.lock();
+
        // prt(info,"%s runing , queue len %d",url.data(),queue_length);
         if(vcap.isOpened()){
+            prt(info,"%s is runing , frame queue length: %d,frame_rate:%d",url.data(),queue_length,frame_rate);
             //double w= vcap.get(CV_CAP_PROP_POS_FRAMES);
         }else{
-            prt(info,"url: %s is Not running",url.data());
+            prt(info,"VideoSrc: url: %s is Not running",url.data());
         }
+           frame_rate=0;
         lock.unlock();
     }
 private:

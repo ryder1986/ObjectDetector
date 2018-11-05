@@ -68,9 +68,12 @@ void App::process_camera_data(Camera *camera, CameraOutputData data)
       //  lock.unlock();
         return;
     }
+    prt(info,"index %d  data rcvd",idx);
+    //lock.lock();
     insert_database(data,idx+1,cms[idx]->screenshot);
     if(udp_fd<=0)
         udp_fd=Socket::UdpCreateSocket(5000);
+   // lock.unlock();
     AppOutputData rst(idx+1,data);
     if(stream_cmd)
         for(Session *ss:*stream_cmd)

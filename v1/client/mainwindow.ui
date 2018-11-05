@@ -128,7 +128,7 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="1" column="0">
-        <widget class="QWidget" name="widget" native="true">
+        <widget class="QWidget" name="widget_text2" native="true">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -170,14 +170,14 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QWidget" name="widget_text2" native="true">
+        <widget class="QWidget" name="widget_text3" native="true">
          <widget class="QPushButton" name="pushButton_load">
           <property name="geometry">
            <rect>
             <x>9</x>
             <y>9</y>
-            <width>80</width>
-            <height>23</height>
+            <width>79</width>
+            <height>29</height>
            </rect>
           </property>
           <property name="text">
@@ -189,8 +189,8 @@
            <rect>
             <x>9</x>
             <y>44</y>
-            <width>80</width>
-            <height>23</height>
+            <width>79</width>
+            <height>29</height>
            </rect>
           </property>
           <property name="text">
@@ -200,10 +200,10 @@
          <widget class="QPushButton" name="pushButton_4">
           <property name="geometry">
            <rect>
-            <x>95</x>
+            <x>94</x>
             <y>9</y>
-            <width>78</width>
-            <height>23</height>
+            <width>79</width>
+            <height>29</height>
            </rect>
           </property>
           <property name="text">
@@ -213,10 +213,10 @@
          <widget class="QPushButton" name="pushButton_6">
           <property name="geometry">
            <rect>
-            <x>95</x>
+            <x>94</x>
             <y>44</y>
-            <width>78</width>
-            <height>23</height>
+            <width>79</width>
+            <height>29</height>
            </rect>
           </property>
           <property name="text">
@@ -227,36 +227,23 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>110</y>
-            <width>161</width>
-            <height>161</height>
+            <y>80</y>
+            <width>81</width>
+            <height>31</height>
            </rect>
           </property>
          </widget>
          <widget class="QPushButton" name="pushButton_clear_buffer">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>270</y>
-            <width>80</width>
-            <height>22</height>
+            <x>90</x>
+            <y>80</y>
+            <width>79</width>
+            <height>29</height>
            </rect>
           </property>
           <property name="text">
            <string>清空缓冲区</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_netbuffer">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>90</y>
-            <width>59</width>
-            <height>14</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>网络缓冲区</string>
           </property>
          </widget>
         </widget>
@@ -313,7 +300,7 @@
      <x>0</x>
      <y>0</y>
      <width>1007</width>
-     <height>23</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

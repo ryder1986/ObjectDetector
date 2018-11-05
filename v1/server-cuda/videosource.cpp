@@ -155,6 +155,8 @@ void VideoSource::run()
               //  prt(info,"timestamp  %lu ", ts);
                 //prt(info,"timestamp  %lu ", fs);
                 frame_rate++;
+                //this_thread::sleep_for(chrono::milliseconds( 40));
+
 
                 if(!(frame_rate%30))
                 {

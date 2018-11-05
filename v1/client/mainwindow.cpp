@@ -148,6 +148,7 @@ void MainWindow::cameras_show_mode(PlayerWidget *wgt)
 
 void MainWindow::on_pushButton_play_clicked()
 {
+    play_mode=ALL_CAM;
     stop_config();
     start_config();
 }

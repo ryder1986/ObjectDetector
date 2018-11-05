@@ -1,5 +1,6 @@
 #include "detectregion.h"
 #include "mvdprocessor.h"
+#include "dummyprocessor.h"
 
 
 
@@ -53,6 +54,7 @@ DetectRegionOutputData DetectRegion::work(Mat frame)
 
 void DetectRegion::modify(RequestPkt pkt)
 {
+    prt(info,"handle region request %d",pkt.Operation);
     lock.lock();
     int op=pkt.Operation;
     switch(op){

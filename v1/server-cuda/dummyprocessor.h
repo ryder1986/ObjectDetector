@@ -15,7 +15,7 @@ public:
     }
     virtual bool process(Mat img_src,JsonPacket &output_pkt)
     {
-
+        this_thread::sleep_for(chrono::milliseconds(1000));
         bool ret=false;
         loopx+=30;
         if(loopx>=img_src.cols)
