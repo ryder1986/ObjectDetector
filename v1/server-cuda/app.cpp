@@ -68,7 +68,7 @@ void App::process_camera_data(Camera *camera, CameraOutputData data)
       //  lock.unlock();
         return;
     }
-    prt(info,"index %d  data rcvd",idx);
+    //prt(info,"index %d  data rcvd",idx);
     //lock.lock();
     insert_database(data,idx+1,cms[idx]->screenshot);
     if(udp_fd<=0)
