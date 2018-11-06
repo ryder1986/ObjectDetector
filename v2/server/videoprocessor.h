@@ -1384,8 +1384,8 @@ public:
         }
         if(DetectLine.size()==2){
             draw_line(offset(DetectLine[0],offx,offy),offset(DetectLine[1],offx,offy),PaintableData::Colour::Blue,2);
-            draw_text("pedestrian line",offset(DetectLine[0],offx,offy),1,PaintableData::Colour::Green,4);
-
+            if(seizing)
+                draw_text("PedestrianLine",offset(DetectLine[0],offx,offy),1,PaintableData::Colour::Blue,4);
             draw_circle(offset(DetectLine[0],offx,offy),2,PaintableData::Colour::Red,2);
             draw_circle(offset(DetectLine[1],offx,offy),2,PaintableData::Colour::Red,2);
 

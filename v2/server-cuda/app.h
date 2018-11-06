@@ -507,10 +507,12 @@ private:
             //   prt(info," %s ",id.SelectedProcessor.data());
             if(id.SelectedProcessor==LABEL_PROCESSOR_MVD){
                 MvdProcessorOutputData mvddata(rst);
+#if 0
                 if(mvddata.EventObjects.size())
                 {
-                 prt(info,"camera %d has event",index);
+                    prt(info,"camera %d has event",index);
                 }
+#endif
                 for(EventRegionObjectOutput eo:mvddata.EventObjects){
 
                     if(!exist_in_last(eo,index)){

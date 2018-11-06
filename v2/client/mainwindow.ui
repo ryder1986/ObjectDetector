@@ -81,7 +81,7 @@
        <item>
         <widget class="QCheckBox" name="checkBox_show_text">
          <property name="text">
-          <string>显示测试</string>
+          <string>显示叠加</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -94,7 +94,7 @@
           <bool>true</bool>
          </property>
          <property name="text">
-          <string>显示信息</string>
+          <string>测试信息</string>
          </property>
          <property name="checked">
           <bool>false</bool>
