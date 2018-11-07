@@ -115,7 +115,7 @@ public:
             QString str(datagram.data());
             JsonPacket pkt(str.toStdString());
             AppOutputData rst( pkt  );
-            //prt(info,"rst-> %s",rst.data().str().data());
+            prt(info,"rst-> %s",rst.data().str().data());
             if(cfg.CameraData.size()>=rst.CameraIndex){
                 if(play_mode==ALL_CAM){
                     int cam_index=rst.CameraIndex;

@@ -156,6 +156,8 @@ typedef struct
 	Uint16 uNoEntryRegionNum;
 	DETECTREGION  NoPersonAllowRegion[MAX_REGION_NUM];//禁止行人区域
 	Uint16 uNoPersonAllowRegionNum;
+	DETECTREGION  NonMotorAllowRegion[MAX_REGION_NUM];//禁止非机动车区域
+	Uint16 uNonMotorAllowRegionNum;
 }INCIDENTDETECTCFG;
 
 typedef struct
@@ -284,6 +286,8 @@ typedef struct{
 	INCIDENTBOX OffLaneBox[MAX_INCIDENT_NUM];//偏离车道
 	Uint16 uNoPersonAllowNum;
 	INCIDENTBOX NoPersonAllowBox[MAX_INCIDENT_NUM];//违法行人
+	Uint16 uNonMotorAllowNum;
+	INCIDENTBOX NonMotorAllowBox[MAX_INCIDENT_NUM];//违法机动车
 	Uint16 uAbandonedObjectNum;
 	INCIDENTBOX AbandonedObject[MAX_INCIDENT_NUM];//抛洒物
 }INCIDENTOUTBUF;
@@ -420,6 +424,8 @@ typedef struct tagCfgs
 
 	Uint16 uIllegalParkNum;
 	INCIDENTBOX IllegalParkBox[MAX_INCIDENT_NUM];//违法停车
+	Uint16 uIllegalParkFrameTime;//前一停车事件帧数
+	Uint16 uIllegalParkID;//前一停车事件的ID
 
 	Uint16 uOppositeDirDriveNum;
 	INCIDENTBOX OppositeDirDriveBox[MAX_INCIDENT_NUM];//逆行
@@ -436,6 +442,13 @@ typedef struct tagCfgs
 
 	Uint16 uNoPersonAllowNum;
 	INCIDENTBOX NoPersonAllowBox[MAX_INCIDENT_NUM];//违法行人
+	Uint16 uPersonIncidentFrameTime;//前一行人事件帧数
+	Uint16 uCurrentPersonID;//前一行人事件的ID
+
+	Uint16 uNonMotorAllowNum;
+	INCIDENTBOX NonMotorAllowBox[MAX_INCIDENT_NUM];//违法非机动车
+	Uint16 uNonMotorIncidentFrameTime;//前一非机动车事件帧数
+	Uint16 uCurrentNonMotorID;//前一非机动车事件的ID
 
 	Uint16 uAbandonedObjectNum;
 	INCIDENTBOX AbandonedObject[MAX_INCIDENT_NUM];//抛洒物
@@ -453,7 +466,9 @@ typedef struct tagParams
 	Uint8   *MaskIllegalParkImage;//非法停车
 	Uint8   *MaskOppositeDirDriveImage;//逆行
 	Uint8   *MaskOffLineImage;//偏离车道
-	Uint8   *MaskNoPersonAlloImage;//违法行人
+	Uint8   *MaskNoPersonAllowImage;//违法行人
+	Uint8   *MaskNonMotorAllowImage;//违法机动车
+
 
 }ALGPARAMS;
 

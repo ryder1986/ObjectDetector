@@ -156,7 +156,8 @@ protected:
             // if(0){
             if(show_output){
                 // draw output
-                if(camera_data.data().str().size()>10)//TODO:better way?
+                if(camera_data.data().str().size()>10&&\
+                        output_data.data().str().size()>0)//TODO:better way?
                     output_data.draw(
                                 camera_data,
                                 bind(&PlayerWidget::draw_line,

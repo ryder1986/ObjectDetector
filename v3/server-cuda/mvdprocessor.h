@@ -202,7 +202,7 @@ public:
 
 		return 1;
 	}
-    m_args* alg_mem_malloc()
+    /*m_args* alg_mem_malloc()
     {
             printf("malloc.......\n");
             //int ret = -1;
@@ -259,12 +259,12 @@ public:
     int alg_mem_free(m_args *arg_arg)
     {
         //printf("free.......\n");
-        /*if(net)
+        if(net)
         {
             free_network(net);
             net = NULL;
         }
-        free(arg_arg->pCfgs->names);*/
+        free(arg_arg->pCfgs->names);
         //free_yolo_params(arg_arg->pCfgs->net, arg_arg->pCfgs->names);//释放检测网络
         if (arg_arg->pCfgs) {
 
@@ -293,7 +293,7 @@ public:
             arg_arg = NULL;
         }
         return 0;
-    }
+    }*/
     MvdProcessor(JsonPacket pkt)
     {
         int i = 0, j = 0;
@@ -346,10 +346,10 @@ public:
 
         }
 		//incident
-		int uOppositeDirDriveRegionNum = 0, uIllegalParkRegionNum = 0, uNoPersonAllowRegionNum = 0, uNoEntryRegionNum = 0;
+		int uOppositeDirDriveRegionNum = 0, uIllegalParkRegionNum = 0, uNoPersonAllowRegionNum = 0, uNoEntryRegionNum = 0,uNonMotorAllowRegionNum = 0;
 		for(i = 0; i < da.Events.size(); i++)//交通事件
 		{
-			if(da.Events[i].Type & (1 << 1))//逆行
+			if(da.Events[i].Type & (1 << (EventRegion::REVERSE_DRIVE - 1)))//逆行
 			{
 				for(j = 0; j < da.Events[i].Vers.size(); j++)
 				{
@@ -359,7 +359,7 @@ public:
 				p_cfg->pDetectCfg->IncidentDetectCfg.direction[uOppositeDirDriveRegionNum] = da.Events[i].Direction;
 				uOppositeDirDriveRegionNum++;
 			}
-			if(da.Events[i].Type & (1 << 2))//禁止停车区域
+			if(da.Events[i].Type & (1 << (EventRegion::STOP_INVALID - 1)))//禁止停车区域
 			{
 				for(j = 0; j < da.Events[i].Vers.size(); j++)
 				{
@@ -368,7 +368,7 @@ public:
 				}
 				uIllegalParkRegionNum++;
 			}
-			if(da.Events[i].Type & (1 << 3))//禁止行人
+			if(da.Events[i].Type & (1 << (EventRegion::NO_PEDESTRIANTION - 1)))//禁止行人
 			{
 				for(j = 0; j < da.Events[i].Vers.size(); j++)
 				{
@@ -377,7 +377,7 @@ public:
 				}
 				uNoPersonAllowRegionNum++;
 			}
-			if(da.Events[i].Type & (1 << 4))//驶离区域
+			if(da.Events[i].Type & (1 << (EventRegion::DRIVE_AWAY - 1)))//驶离区域
 			{
 				for(j = 0; j < da.Events[i].Vers.size(); j++)
 				{
@@ -386,12 +386,23 @@ public:
 				}
 				uNoEntryRegionNum++;
 			}
-
+			if(da.Events[i].Type & (1 << (EventRegion::NON_MOTOR - 1)))//禁止机动车
+			{
+				for(j = 0; j < da.Events[i].Vers.size(); j++)
+				{
+					p_cfg->pDetectCfg->IncidentDetectCfg.NonMotorAllowRegion[uNoEntryRegionNum].detRegion[j].x = da.Events[i].Vers[j].x;
+					p_cfg->pDetectCfg->IncidentDetectCfg.NonMotorAllowRegion[uNoEntryRegionNum].detRegion[j].y = da.Events[i].Vers[j].y;
+				}
+				uNonMotorAllowRegionNum++;
+				printf("uNonMotorAllowRegionNum = %d,%d\n",uNonMotorAllowRegionNum,da.Events[i].Vers.size());
+			}
 		}
 		p_cfg->pDetectCfg->IncidentDetectCfg.uIllegalParkRegionNum = uIllegalParkRegionNum;//禁止停车区域数
 		p_cfg->pDetectCfg->IncidentDetectCfg.uOppositeDirDriveRegionNum = uOppositeDirDriveRegionNum;//禁止逆行区域数
 		p_cfg->pDetectCfg->IncidentDetectCfg.uNoEntryRegionNum = uNoEntryRegionNum;//驶离区域数
-		p_cfg->pDetectCfg->IncidentDetectCfg.uNoPersonAllowRegionNum = uNoPersonAllowRegionNum;//禁止行人数
+		p_cfg->pDetectCfg->IncidentDetectCfg.uNoPersonAllowRegionNum = uNoPersonAllowRegionNum;//禁止行人区域数
+		p_cfg->pDetectCfg->IncidentDetectCfg.uNonMotorAllowRegionNum = uNonMotorAllowRegionNum;//禁止非机动车区域数
+	    printf("uNonMotorAllowRegionNum1 = %d\n",p_cfg->pDetectCfg->IncidentDetectCfg.uNonMotorAllowRegionNum);
 
 #ifndef TEST_CLIENT
 #ifdef TEST_PROGRAM
@@ -462,13 +473,12 @@ public:
 
 
         //incident
-		int uOppositeDirDriveRegionNum = 0, uIllegalParkRegionNum = 0, uNoPersonAllowRegionNum = 0, uNoEntryRegionNum = 0;
+		int uOppositeDirDriveRegionNum = 0, uIllegalParkRegionNum = 0, uNoPersonAllowRegionNum = 0, uNoEntryRegionNum = 0,uNonMotorAllowRegionNum = 0;
 		for(i = 0; i < da.Events.size(); i++)//交通事件
 		{
-
-            if(da.Events[i].Type & (1 << 1))//逆行
+			if(da.Events[i].Type & (1 << (EventRegion::REVERSE_DRIVE - 1)))//逆行
 			{
-                for(j = 0; j < da.Events[i].Vers.size(); j++)
+				for(j = 0; j < da.Events[i].Vers.size(); j++)
 				{
 					p_cfg->pDetectCfg->IncidentDetectCfg.OppositeDirDriveRegion[uOppositeDirDriveRegionNum].detRegion[j].x = da.Events[i].Vers[j].x;
 					p_cfg->pDetectCfg->IncidentDetectCfg.OppositeDirDriveRegion[uOppositeDirDriveRegionNum].detRegion[j].y = da.Events[i].Vers[j].y;
@@ -476,25 +486,25 @@ public:
 				p_cfg->pDetectCfg->IncidentDetectCfg.direction[uOppositeDirDriveRegionNum] = da.Events[i].Direction;
 				uOppositeDirDriveRegionNum++;
 			}
-            if(da.Events[i].Type & (1 << 2))//禁止停车区域
+			if(da.Events[i].Type & (1 << (EventRegion::STOP_INVALID - 1)))//禁止停车区域
 			{
-                for(j = 0; j < da.Events[i].Vers.size(); j++)
+				for(j = 0; j < da.Events[i].Vers.size(); j++)
 				{
 					p_cfg->pDetectCfg->IncidentDetectCfg.IllegalParkRegion[uIllegalParkRegionNum].detRegion[j].x = da.Events[i].Vers[j].x;;
 					p_cfg->pDetectCfg->IncidentDetectCfg.IllegalParkRegion[uIllegalParkRegionNum].detRegion[j].y = da.Events[i].Vers[j].y;
 				}
 				uIllegalParkRegionNum++;
 			}
-            if(da.Events[i].Type & (1 << 3))//禁止行人
+			if(da.Events[i].Type & (1 << (EventRegion::NO_PEDESTRIANTION - 1)))//禁止行人
 			{
 				for(j = 0; j < da.Events[i].Vers.size(); j++)
 				{
-                    p_cfg->pDetectCfg->IncidentDetectCfg.NoPersonAllowRegion[uNoPersonAllowRegionNum].detRegion[j].x = da.Events[i].Vers[j].x;
-                    p_cfg->pDetectCfg->IncidentDetectCfg.NoPersonAllowRegion[uNoPersonAllowRegionNum].detRegion[j].y = da.Events[i].Vers[j].y;
+					p_cfg->pDetectCfg->IncidentDetectCfg.NoPersonAllowRegion[uNoPersonAllowRegionNum].detRegion[j].x = da.Events[i].Vers[j].x;
+					p_cfg->pDetectCfg->IncidentDetectCfg.NoPersonAllowRegion[uNoPersonAllowRegionNum].detRegion[j].y = da.Events[i].Vers[j].y;
 				}
 				uNoPersonAllowRegionNum++;
 			}
-            if(da.Events[i].Type & (1 << 4))//驶离区域
+			if(da.Events[i].Type & (1 << (EventRegion::DRIVE_AWAY - 1)))//驶离区域
 			{
 				for(j = 0; j < da.Events[i].Vers.size(); j++)
 				{
@@ -503,11 +513,23 @@ public:
 				}
 				uNoEntryRegionNum++;
 			}
+			if(da.Events[i].Type & (1 << (EventRegion::NON_MOTOR - 1)))//禁止机动车
+			{
+				for(j = 0; j < da.Events[i].Vers.size(); j++)
+				{
+					p_cfg->pDetectCfg->IncidentDetectCfg.NonMotorAllowRegion[uNoEntryRegionNum].detRegion[j].x = da.Events[i].Vers[j].x;
+					p_cfg->pDetectCfg->IncidentDetectCfg.NonMotorAllowRegion[uNoEntryRegionNum].detRegion[j].y = da.Events[i].Vers[j].y;
+				}
+				uNonMotorAllowRegionNum++;
+				printf("uNonMotorAllowRegionNum = %d,%d\n",uNonMotorAllowRegionNum,da.Events[i].Vers.size());
+			}
 		}
 		p_cfg->pDetectCfg->IncidentDetectCfg.uIllegalParkRegionNum = uIllegalParkRegionNum;//禁止停车区域数
 		p_cfg->pDetectCfg->IncidentDetectCfg.uOppositeDirDriveRegionNum = uOppositeDirDriveRegionNum;//禁止逆行区域数
 		p_cfg->pDetectCfg->IncidentDetectCfg.uNoEntryRegionNum = uNoEntryRegionNum;//驶离区域数
-		p_cfg->pDetectCfg->IncidentDetectCfg.uNoPersonAllowRegionNum = uNoPersonAllowRegionNum;//禁止行人数
+		p_cfg->pDetectCfg->IncidentDetectCfg.uNoPersonAllowRegionNum = uNoPersonAllowRegionNum;//禁止行人区域数
+		p_cfg->pDetectCfg->IncidentDetectCfg.uNonMotorAllowRegionNum = uNonMotorAllowRegionNum;//禁止非机动车区域数
+		printf("uNonMotorAllowRegionNum1 = %d\n",p_cfg->pDetectCfg->IncidentDetectCfg.uNonMotorAllowRegionNum);
 #ifndef TEST_CLIENT
 #ifdef TEST_PROGRAM
 		RestParams_test(p_cfg->pCfgs, DetLine, &p_cfg->pDetectCfg->FvdDetectCfg, &p_cfg->pDetectCfg->IncidentDetectCfg, p_cfg->pParams);
@@ -999,6 +1021,18 @@ public:
             EventObjects.push_back(EventRegionObjectOutput(Vers,EventRegion::AbANDON_OBJECT,p_cfg->p_outbuf->INCIDENToutbuf.AbandonedObject[i].uIncidentID));
 
         }
+		//禁止非机动车
+		for( i = 0; i < p_cfg->p_outbuf->INCIDENToutbuf.uNonMotorAllowNum; i++)
+		{
+			vector<VdPoint> Vers;
+			for(int j = 0; j < 4; j++)
+			{
+				Vers.push_back(VdPoint(p_cfg->p_outbuf->INCIDENToutbuf.NonMotorAllowBox[i].IncidentBox[j].x,
+					p_cfg->p_outbuf->INCIDENToutbuf.NonMotorAllowBox[i].IncidentBox[j].y));
+			}
+			EventObjects.push_back(EventRegionObjectOutput(Vers,EventRegion::NON_MOTOR,p_cfg->p_outbuf->INCIDENToutbuf.NonMotorAllowBox[i].uIncidentID));
+
+		}
         MvdProcessorOutputData out(MvdDetectedObjects,
                                    CurrentVehicleNumber,
                                    Visibility,

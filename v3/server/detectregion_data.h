@@ -286,7 +286,9 @@ public:
 
                     right_press_menu_item itm;
 
-                    vector <bool > types=mi->get_events_attr(idx);
+                    vector <bool > types;
+                    types.resize(EventRegion::event_type_max_size);
+                    types=mi->get_events_attr(idx);
 
 
                     {

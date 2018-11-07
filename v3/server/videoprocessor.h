@@ -929,7 +929,7 @@ public:
     {
         EventRegion r=Events[index-1];
         vector<bool> types;
-        types.reserve(EventRegion::event_type_max_size);
+        types.resize(EventRegion::event_type_max_size);
         int type_index=0;
         for(int i=0;i<EventRegion::event_type_max_size;i++){
             if(r.Type>>type_index&0x1)
@@ -1489,8 +1489,13 @@ public:
     void decode()
     {
         try{
-            DECODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
+            try{
+                 DECODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
+            }catch(exception e){}
             DECODE_INT_MEM(CurrentVehicleNumber);
+            if(CurrentVehicleNumber<0){
+                prt(info,"err num");
+            }
             DECODE_INT_MEM(Visibility);
             DECODE_INT_MEM(VideoState);
             DECODE_JSONDATA_ARRAY_MEM(LaneOutputData);
@@ -1508,7 +1513,9 @@ public:
     void encode()
     {
         try{
-            ENCODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
+            try{
+                ENCODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
+            }catch(exception e){}
             ENCODE_INT_MEM(CurrentVehicleNumber);
             ENCODE_INT_MEM(Visibility);
             ENCODE_INT_MEM(VideoState);
@@ -1669,6 +1676,12 @@ public:
         ///////////text output////
         char buf[100];
         int x=10,y=10;
+#if 0
+        if(CurrentVehicleNumber<0){
+            for(int ccc=0;ccc<1000;ccc++){
+            prt(info,"err numer %d",CurrentVehicleNumber);}
+        }
+#endif
         memset(buf,0,100);sprintf(buf,"当前车辆总数 %d", CurrentVehicleNumber);
         if(ClientConfig::show_processor_text){
             draw_text(buf,VdPoint(x,y),1,PaintableData::Colour::Green,4);

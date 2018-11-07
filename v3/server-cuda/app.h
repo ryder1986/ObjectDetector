@@ -370,6 +370,8 @@ private:
             break;
         case EventRegion::AbANDON_OBJECT:
             str.append("AbANDON_OBJECT");
+        case EventRegion::NON_MOTOR:
+            str.append("NON_MOTOR");
             break;
         default:break;
 
