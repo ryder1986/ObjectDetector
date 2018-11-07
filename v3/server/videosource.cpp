@@ -5,6 +5,7 @@
 VideoSource::VideoSource(string path):watch_dog(bind(&VideoSource::check_point,this)),
     frame_rate(0),is_pic(false),src_trd(NULL)
 {
+    quited=false;
     only_key_frame=false;
     try_times=0;
     url=path;
@@ -27,25 +28,25 @@ VideoSource::VideoSource(string path):watch_dog(bind(&VideoSource::check_point,t
         src_trd=new thread(bind(&VideoSource::run,this));
 }
 
-VideoSource::VideoSource(string path,bool only_keyframe):watch_dog(bind(&VideoSource::check_point,this)),
-    frame_rate(0),vcap(path),is_pic(false),src_trd(NULL)
-{
-    only_key_frame=only_keyframe;
+//VideoSource::VideoSource(string path,bool only_keyframe):watch_dog(bind(&VideoSource::check_point,this)),
+//    frame_rate(0),vcap(path),is_pic(false),src_trd(NULL)
+//{
+//    only_key_frame=only_keyframe;
 
-    try_times=0;
-    //  Timer1 t1(bind(&VideoSource::check_point,this));
-    watch_dog.start(1000);
-    prt(info,"%s",path.data());
-    url=path;
-    quit_flg=false;
-    queue_length=3;
-    if(end_with_str(url,"png")){
-        cv::imread(url).copyTo(png_frame);
-        prt(info,"read png");
-        is_pic=true;
-    }else
-        src_trd=new thread(bind(&VideoSource::run,this));
-}
+//    try_times=0;
+//    //  Timer1 t1(bind(&VideoSource::check_point,this));
+//    watch_dog.start(1000);
+//    prt(info,"%s",path.data());
+//    url=path;
+//    quit_flg=false;
+//    queue_length=3;
+//    if(end_with_str(url,"png")){
+//        cv::imread(url).copyTo(png_frame);
+//        prt(info,"read png");
+//        is_pic=true;
+//    }else
+//        src_trd=new thread(bind(&VideoSource::run,this));
+//}
 VideoSource::~VideoSource()
 {
    quit_this();
@@ -107,6 +108,7 @@ void VideoSource::run()
 
         lock.lock();
         if(quit_flg){
+              lock.unlock();
             break;
         }
 
@@ -196,6 +198,7 @@ void VideoSource::run()
         lock.unlock();
         this_thread::sleep_for(chrono::milliseconds(10));
     }
+      quited=true;
     prt(info,"thread is quiting");
 //    lock.lock();
 //    if( vcap.isOpened())

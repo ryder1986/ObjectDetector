@@ -676,4 +676,23 @@ this_thread::sleep_for(chrono::microseconds(1000));\
 while(true){\
 this_thread::sleep_for(chrono::microseconds(1000));\
 }
+
+#define PAUSE_HERE_3s     \
+while(true){\
+static int tmp=0;if(tmp++>3){prt(info,"pause 3 seconds done");break;}this_thread::sleep_for(chrono::microseconds(1000000));\
+}
+
+#define DELETE_POINTER_LATER(tp,name,msec)\
+{\
+tp addr=name;\
+    \
+std::thread([addr](){\
+    this_thread::sleep_for(chrono::milliseconds(msec));\
+    delete addr;/*prt(info,"delete %p ok",addr);*/\
+}\
+).detach();\
+    \
+name=NULL;\
+}
+
 #endif // TOOL1_H

@@ -25,7 +25,7 @@ class VideoSource
 {
 public:
     VideoSource(string path);
-    VideoSource(string path,bool only_key_frame);
+  //  VideoSource(string path,bool only_key_frame);
      ~VideoSource();
     void set_buffer_size(int frames)
     {
@@ -164,6 +164,11 @@ public:
         //delete src_trd;
        // src_trd->detach();//TODO delete it?
         //delete src_trd;
+        while(!quited){
+              this_thread::sleep_for(chrono::milliseconds(1000));
+              prt(info,"quiting src..");
+        }
+        prt(info,"quiting src done");
 
 
     }
@@ -199,6 +204,7 @@ private:
     int frame_rate;
     string url;
     volatile bool quit_flg;
+    bool quited;
 
 
     thread *src_trd;

@@ -115,7 +115,7 @@ public:
             QString str(datagram.data());
             JsonPacket pkt(str.toStdString());
             AppOutputData rst( pkt  );
-            prt(info,"rst-> %s",rst.data().str().data());
+            //prt(info,"rst-> %s",rst.data().str().data());
             if(cfg.CameraData.size()>=rst.CameraIndex){
                 if(play_mode==ALL_CAM){
                     int cam_index=rst.CameraIndex;
@@ -268,7 +268,7 @@ private slots:
             widget_remove_camera(w);
             w->hide();
 #if 1
-            //    delete w;//TODO: add deleting method
+            delete w;//TODO: add deleting method
 #else
             // std::thread([this,w](){ delete w;}).detach();
             QTimer::singleShot(1000, this, [w] () {delete w;});

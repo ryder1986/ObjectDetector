@@ -93,7 +93,10 @@ public:
         lock.unlock();
       //  VideoSource *tmp=src;
        // std::thread([tmp](){ delete tmp;}).detach();
-              delete src;
+            //  delete src;
+
+
+        DELETE_POINTER_LATER(VideoSource*,src,1);
     }
 
     void set_output_data(CameraOutputData data)

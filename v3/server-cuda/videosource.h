@@ -143,7 +143,7 @@ public:
             //           prt(info,"%d",end_time-start_time);
 
 
-            //frame_list.erase(frame_list.begin());
+            frame_list.erase(frame_list.begin());
             timestamp=cur_ms_list.front();
             //cur_ms_list.erase(cur_ms_list.begin());
             ret=true;
