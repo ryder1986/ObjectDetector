@@ -779,7 +779,8 @@ public:
         NO_PEDESTRIANTION,
         DRIVE_AWAY,
         CONGESTION,
-        AbANDON_OBJECT
+        AbANDON_OBJECT,
+        NON_MOTOR=20
     };
     vector <VdPoint> Vers;
     int Type;

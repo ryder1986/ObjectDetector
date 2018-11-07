@@ -351,7 +351,15 @@ public:
                         itm.pkt=get_request(DetectRegionInputData::MODIFY_PROCESSOR,0,tmp_os.data());
                         items_ret.push_back(itm);
                     }
-
+                    {
+                        itm.text="NON_MOTOR";
+                        MvdProcessorInputData tmp_os(mi->data());tmp_os.reverse_event(idx,EventRegion::NON_MOTOR);
+                        itm.checkable=true;
+                        itm.checked=types[EventRegion::NON_MOTOR-1];
+                       // itm.checked=types[EventRegion::event_type_size-1];
+                        itm.pkt=get_request(DetectRegionInputData::MODIFY_PROCESSOR,0,tmp_os.data());
+                        items_ret.push_back(itm);
+                    }
 
                     {
                         itm.text="revert direction";

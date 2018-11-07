@@ -779,8 +779,10 @@ public:
         NO_PEDESTRIANTION,
         DRIVE_AWAY,
         CONGESTION,
-        AbANDON_OBJECT
+        AbANDON_OBJECT,
+        NON_MOTOR=20
     };
+    enum {event_type_max_size=32};
     vector <VdPoint> Vers;
     int Type;
     int Direction;
@@ -927,40 +929,48 @@ public:
     {
         EventRegion r=Events[index-1];
         vector<bool> types;
-        if(r.Type&0x1)
-            types.push_back(true);
-        else
-            types.push_back(false);
+        types.reserve(EventRegion::event_type_max_size);
+        int type_index=0;
+        for(int i=0;i<EventRegion::event_type_max_size;i++){
+            if(r.Type>>type_index&0x1)
+                types[type_index++]=true;
+            else
+                types[type_index++]=false;
+        }
 
-        if(r.Type>>1&0x1)
-            types.push_back(true);
-        else
-            types.push_back(false);
+//        if(r.Type>>1&0x1)
+//            types.push_back(true);
+//        else
+//            types.push_back(false);
 
-        if(r.Type>>2&0x1)
-            types.push_back(true);
-        else
-            types.push_back(false);
+//        if(r.Type>>2&0x1)
+//            types.push_back(true);
+//        else
+//            types.push_back(false);
 
-        if(r.Type>>3&0x1)
-            types.push_back(true);
-        else
-            types.push_back(false);
+//        if(r.Type>>3&0x1)
+//            types.push_back(true);
+//        else
+//            types.push_back(false);
 
-        if(r.Type>>4&0x1)
-            types.push_back(true);
-        else
-            types.push_back(false);
+//        if(r.Type>>4&0x1)
+//            types.push_back(true);
+//        else
+//            types.push_back(false);
 
-        if(r.Type>>5&0x1)
-            types.push_back(true);
-        else
-            types.push_back(false);
+//        if(r.Type>>5&0x1)
+//            types.push_back(true);
+//        else
+//            types.push_back(false);
 
-        if(r.Type>>6&0x1)
-            types.push_back(true);
-        else
-            types.push_back(false);
+//        if(r.Type>>6&0x1)
+//            types.push_back(true);
+//        else
+//            types.push_back(false);
+//        if(r.Type>>19&0x1)//non motor
+//            types.push_back(true);
+//        else
+//            types.push_back(false);
         return types;
     }
 
@@ -1598,6 +1608,8 @@ public:
                     sprintf(buf,"%s","CONGESTION");
                 if(o.Type==EventRegion::AbANDON_OBJECT)
                     sprintf(buf,"%s","AbANDON_OBJECT");
+                if(o.Type==EventRegion::NON_MOTOR)
+                    sprintf(buf,"%s","NON_MOTOR");
                 draw_text(buf,ps[0],1,PaintableData::Colour::Green,4);
 #endif
                 //    draw_text(o.Type,VdPoint(ps[0].x+100,ps[0].y),1,PaintableData::Colour::Green,4);
