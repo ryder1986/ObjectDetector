@@ -415,7 +415,15 @@ private:
 
         prt(info,"inserting video start");
         Mat fst=buffer_frames[cam_index-1].front();
-        cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', 'V', 'I', 'D'), 15,  cv::Size(fst.cols, fst.rows));
+      //  cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', 'V', 'I', 'D'), 15,  cv::Size(fst.cols, fst.rows));
+     //   cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('M', 'J', 'P', 'G'), 15,  cv::Size(fst.cols, fst.rows));
+
+     //   cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('D', 'I', 'V', 'X'), 15,  cv::Size(fst.cols, fst.rows));
+        cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', '2', '6', '4'), 15,  cv::Size(fst.cols, fst.rows));
+
+
+     //   CV_FOURCC('M', 'J', 'P', 'G')
+
         if (!recVid.isOpened())
         {
             cout << "Error!Video File is not open...\n";
@@ -445,7 +453,8 @@ private:
         pic_name.append(stream.str());
         video_name.append(stream.str());
         pic_name.append(".png");
-        video_name.append(".avi");
+        //video_name.append(".avi");
+                video_name.append(".mp4");
     }
     string insert_pic_ex(Mat frame,vector <VdPoint> outline,int type,vector <VdPoint> region)
     {
