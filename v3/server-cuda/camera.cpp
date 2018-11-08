@@ -8,6 +8,12 @@ void Camera::run_process()
     while(!quit){
         this_thread::sleep_for(chrono::milliseconds(10));
         if(src->get_frame(frame,ts)){
+
+
+//            imshow("window",frame);
+//            waitKey(0);
+
+
             frame_rate++;
 #if 0
             for(DetectRegion *r:drs){
@@ -25,7 +31,12 @@ void Camera::run_process()
             }
             CameraOutputData cod(pkts,ts);
             timestamp=ts;
-            screenshot=frame;
+            //screenshot=frame;
+
+            frame.copyTo(screenshot);
+
+
+
             callback_result(this,cod);
             lock.unlock();
         }
