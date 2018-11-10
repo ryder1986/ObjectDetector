@@ -19,7 +19,7 @@
 #include "assert.h"
 using namespace std;
 
-#ifdef IS_WIN
+#ifdef IS_WIN32
 #include <direct.h>
 #endif
 
@@ -196,7 +196,7 @@ private:
         //            cout<<"exist"<<endl;
         //        }
 
-#ifdef IS_WIN
+#ifdef Q_OS_WIN32
         mkdir(dirname);
 #else
         mkdir(dirname,0755);
@@ -672,7 +672,7 @@ public:
 while(true){\
 this_thread::sleep_for(chrono::microseconds(1000));\
 }
-#define PAUSE_HERE     \
+#define PAUSE_HERE_FOREVER     \
 while(true){\
 this_thread::sleep_for(chrono::microseconds(1000));\
 }
