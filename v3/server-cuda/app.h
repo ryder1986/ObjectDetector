@@ -11,6 +11,7 @@
 
 #define MAX_CAM_NUM 1000
 #define COUNT_SECONDS 300
+#define RECORD_SIZE 100
 class DatabaseInstance
 {
 public:
@@ -348,10 +349,10 @@ private:
     }
 
 
-    string insert_picture(Mat frame,vector <VdPoint> outline,int type,vector <VdPoint> region,string pic_path)
+    void insert_picture(Mat frame,vector <VdPoint> outline,int type,vector <VdPoint> region,string pic_path)
     {
         string str;
-
+        prt(info,"inserting pic1");
         switch(type){
         case EventRegion::OVER_SPEED:
             str.append("OVER_SPEED");
@@ -379,7 +380,8 @@ private:
         default:break;
 
         }
-
+       // return "1";
+prt(info,"inserting pic2");
         putText(frame, str, Point(100,130),CV_FONT_HERSHEY_SIMPLEX,1,Scalar(0,255,255),3,8);
         VdRect rct= vers_2_rect(region);
         VdPoint offset(rct.x,rct.y);
@@ -393,36 +395,43 @@ private:
             for(int i=0;i<outline.size()-1;i++){
                 VdPoint start=add_point_offset(outline[i],offset);
                 VdPoint end=add_point_offset(outline[i+1],offset);
-                line(frame, Point(start.x,start.y),Point( end.x,end.y), Scalar(255, 255 ,0), 3, 8, 0 );
+              line(frame, Point(start.x,start.y),Point( end.x,end.y), Scalar(255, 255 ,0), 3, 8, 0 );
             }
             VdPoint start=add_point_offset(outline.front(),offset);
             VdPoint end=add_point_offset(outline.back(),offset);
             line(frame, Point(start.x,start.y),Point( end.x,end.y), Scalar(255, 255 ,0), 3, 8, 0 );
 
         }
-//        string user="root";
-//        string passwd="root";
-//        string db="AIPD";
-//        string host="localhost";
-
-        imwrite(pic_path,frame);
+        //        string user="root";
+        //        string passwd="root";
+        //        string db="AIPD";
+        //        string host="localhost";
+   prt(info,"inserting pic3");
+       imwrite(pic_path,frame);
+        prt(info,"inserting pic4");
     }
 
     int insert_video(int cam_index,string path)
     {
+
+              buffer_lock.lock();
         if(buffer_frames[cam_index-1].size()==0)
+        {
+              buffer_lock.unlock();
             return 0;
 
+        }
         prt(info,"inserting video start");
         Mat fst=buffer_frames[cam_index-1].front();
-      //  cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', 'V', 'I', 'D'), 15,  cv::Size(fst.cols, fst.rows));
-     //   cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('M', 'J', 'P', 'G'), 15,  cv::Size(fst.cols, fst.rows));
+        //  cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', 'V', 'I', 'D'), 15,  cv::Size(fst.cols, fst.rows));
+        //   cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('M', 'J', 'P', 'G'), 15,  cv::Size(fst.cols, fst.rows));
 
-     //   cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('D', 'I', 'V', 'X'), 15,  cv::Size(fst.cols, fst.rows));
-        cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', '2', '6', '4'), 15,  cv::Size(fst.cols, fst.rows));
+        //   cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('D', 'I', 'V', 'X'), 15,  cv::Size(fst.cols, fst.rows));
+      //  cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', '2', '6', '4'), 15,  cv::Size(fst.cols, fst.rows));
+        cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', '2', '6', '4'), 10,  cv::Size(fst.cols, fst.rows));
 
 
-     //   CV_FOURCC('M', 'J', 'P', 'G')
+        //   CV_FOURCC('M', 'J', 'P', 'G')
 
         if (!recVid.isOpened())
         {
@@ -430,16 +439,34 @@ private:
             return -1;
         }
         prt(info,"");
-    //    int i=0;
+        //    int i=0;
+        vector <Mat> mts;
+
         for(Mat mt:buffer_frames[cam_index-1]){
-            cout << "write a frane  \n"<<mt.cols;
-           recVid<<mt;
+            Mat m;
+            mt.copyTo(m);
+            mts.push_back(m);
+        }
+        buffer_lock.unlock();
+
+
+
+
+
+        for(Mat mt:mts){
+            cout << "write a frane  ";
+            prt(info,"-> %d %d",mt.cols,mt.rows);
+            recVid<<mt;
         }
 
-//        for(int i=0;i<100;i++){
-//        imshow("window",buffer_frames_test[i]);
-//             waitKey(10);
-//        }
+//        recVid.release();
+//        return 0;
+
+
+        //        for(int i=0;i<100;i++){
+        //        imshow("window",buffer_frames_test[i]);
+        //             waitKey(10);
+        //        }
 
         recVid.release();
 
@@ -454,7 +481,7 @@ private:
         video_name.append(stream.str());
         pic_name.append(".png");
         //video_name.append(".avi");
-                video_name.append(".mp4");
+        video_name.append(".mp4");
     }
     string insert_pic_ex(Mat frame,vector <VdPoint> outline,int type,vector <VdPoint> region)
     {
@@ -508,10 +535,10 @@ private:
             line(frame, Point(start.x,start.y),Point( end.x,end.y), Scalar(255, 255 ,0), 3, 8, 0 );
 
         }
-//        string user="root";
-//        string passwd="root";
-//        string db="AIPD";
-//        string host="localhost";
+        //        string user="root";
+        //        string passwd="root";
+        //        string db="AIPD";
+        //        string host="localhost";
         string fn;
         fn.append("/ftphome/pic/");
 
@@ -520,7 +547,7 @@ private:
         fn.append(stream.str());
         fn.append(".png");
         imwrite(fn,frame);
-       //prt(info,"get pic");
+        //prt(info,"get pic");
         stream<<".png";
         return stream.str();
     }
@@ -535,32 +562,33 @@ private:
             //           / return -1;
         }
 
-//        imshow("window",frame);
-//        waitKey(0);
+        //        imshow("window",frame);
+        //        waitKey(0);
 
         Mat mt;
-        if(buffer_frames[index-1].size()>100){
+        buffer_lock.lock();
+        if(buffer_frames[index-1].size()>RECORD_SIZE){
             buffer_frames[index-1].erase(buffer_frames[index-1].begin());
-           //  buffer_frames[index-1]
+            //  buffer_frames[index-1]
         }
 
         frame.copyTo(mt);
         buffer_frames[index-1].push_back(mt);
+        buffer_lock.unlock();
+
+        //        if(buffer_frames_test.size()>100){
+        //            buffer_frames_test.erase(buffer_frames_test.begin());
+        //           //  buffer_frames[index-1]
+        //        }
+
+        //        Mat mt;
+        //        frame.copyTo(mt);
+        //        buffer_frames_test.push_back(mt);
 
 
-//        if(buffer_frames_test.size()>100){
-//            buffer_frames_test.erase(buffer_frames_test.begin());
-//           //  buffer_frames[index-1]
-//        }
 
-//        Mat mt;
-//        frame.copyTo(mt);
-//        buffer_frames_test.push_back(mt);
-
-
-
-//        imshow("window",buffer_frames[index-1].front());
-//        waitKey(10);
+        //        imshow("window",buffer_frames[index-1].front());
+        //        waitKey(10);
         //prt(info,"buffer sz %d",buffer_frames[index-1].size());
         CameraInputData input=cms[index-1]->get_data();
 #if 0
@@ -659,28 +687,41 @@ private:
                     if(!exist_in_last(eo,index)){
                         prt(info," inserting  event %d ",eo.Type);
 
-                        imwrite("/ftphome/video/first.png",buffer_frames[0].front());
-                        imwrite("/ftphome/video/last.png",buffer_frames[0].back());
+//                        imwrite("/ftphome/video/first.png",buffer_frames[0].front());
+//                        imwrite("/ftphome/video/last.png",buffer_frames[0].back());
 
-                        prt(info,"buf sz -------------------> %d",buffer_frames[0].size());
+//                        prt(info,"buf sz -------------------> %d",buffer_frames[0].size());
 
-                         string picname;
+                        string picname;
                         string videoname;
                         string picpath("/ftphome/pic/");
                         string videopath("/ftphome/video/");
                         get_names(picname,videoname);
                         picpath.append(picname);
                         videopath.append(videoname);
+                        Timer2 t2;
+                        Mat  frame_tmp;
+                        frame.copyTo(frame_tmp);
+                       // t2.AsyncWait(0,bind(&App::insert_video,this,placeholders::_1,placeholders::_2),index,videopath);
                         insert_video(index,videopath);
 
+                        buffer_lock.lock();
 
-                        insert_picture(frame,eo.Vers,eo.Type,id.ExpectedAreaVers,picpath);
+                            prt(info,"inserting pic");
+                       insert_picture(frame_tmp,eo.Vers,eo.Type,id.ExpectedAreaVers,picpath);
+                    //   prt(info,"inserting pic done");
+                        buffer_lock.unlock();
+
+                       //insert_picture(frame,eo.Vers,eo.Type,id.ExpectedAreaVers,picpath);
 #if 0
                         string name= insert_pic_ex(frame,eo.Vers,eo.Type,id.ExpectedAreaVers);
                         string path("/ftphome/pic/");
                         path.append(name);
 #endif
+                        buffer_lock.lock();
+
                         database_insert_tis(get_sql_time(),eo.Type,picpath.data(),videopath.data());
+                        buffer_lock.unlock();
 
                     }
                 }
@@ -695,15 +736,34 @@ private:
 #endif
 
     }
+#if 1
     inline bool exist_in_last(EventRegionObjectOutput event,int index)
     {
         for(EventRegionObjectOutput e:last_events[index-1]){
             if(e.EventID==event.EventID&&e.Type==event.Type){
+
                 return true;
+            }else{
+                prt(info,"new event-> id %d (old %d), type %d(old %d)",e.EventID,event.EventID,e.Type,event.Type);
             }
         }
         return false;
     }
+#else
+    inline bool exist_in_last(EventRegionObjectOutput event,int index)
+    {
+        for(EventRegionObjectOutput e:last_events[index-1]){
+            if(e.EventID==event.EventID&&e.Type==event.Type){
+
+
+            }else{
+                prt(info,"new event-> id %d (old %d), type %d(old %d)",e.EventID,event.EventID,e.Type,event.Type);
+                return true;
+            }
+        }
+        return true;
+    }
+#endif
     void database_insert_tis(const char *sql_time,int type,const char * pic_path,const char * video_path)
     {
         prt(info,"event %d",type);
@@ -909,9 +969,10 @@ private:
     bool quit_count;
     vector <Mat> buffer_frames[MAX_CAM_NUM];
     vector <Mat> buffer_frames_test;
-     vector <EventRegionObjectOutput> last_events[MAX_CAM_NUM];
+    vector <EventRegionObjectOutput> last_events[MAX_CAM_NUM];
     vector <MvdProcessorOutputData> outputs[MAX_CAM_NUM];//support 100 cameras
     mutex lock;
+    mutex buffer_lock;
 };
 
 

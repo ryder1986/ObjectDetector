@@ -193,11 +193,13 @@ private slots:
                     w->set_output_data(rst.CameraOutput);
                     thread_lock.unlock();
                 }else{
+                    thread_lock.lock();
                     if(play_index==rst.CameraIndex)
                     {
                         PlayerWidget *w= players[0];
                         w->set_output_data(rst.CameraOutput);
                     }
+                    thread_lock.unlock();
 
                 }
             }else{

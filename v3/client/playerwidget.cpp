@@ -13,6 +13,8 @@ PlayerWidget::PlayerWidget(CameraInputData data,QWidget *parent) : QWidget(paren
     camera_data=data;
     tick_timer=new QTimer();
     connect(tick_timer,SIGNAL(timeout()),this,SLOT(timeout()));
+    connect(&check_timer,SIGNAL(timeout()),this,SLOT(check_point()));
     connect(&menu,SIGNAL(aboutToHide()),this,SLOT(clear_menu()),Qt::QueuedConnection);
     tick_timer->start(100);//check frame aviliable every 100ms
+    check_timer.start(1000);
 }

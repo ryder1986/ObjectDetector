@@ -76,7 +76,13 @@ inline void delete_dir_files(char *dirname,int total,int left)
 inline void delete_dir_files(char *dirname,int total,int left)
 {
    // system("cd  /ftphome/pic ; ls > /root/test.txt");
-    system("cd /ftphome/pic/ ; ls -tp  | grep -v '/$' | tail -n +1000 | xargs -d '\n' -r rm --;cd -");
+//    system("cd /ftphome/pic/ ; ls -tp  | grep -v '/$' | tail -n +1000 | xargs -d '\n' -r rm --;cd -");
+
+     char buf[1000];memset(buf,0,1000);
+     sprintf(buf,"cd %s ; ls -tp  | grep -v '/$' | tail -n +%d | xargs -d '\n' -r rm --;cd -",dirname,1000);
+     system(buf);
+
+
   //    DIR *d;
 //    struct dirent *dir;
 //    d = opendir(dirname);
@@ -400,7 +406,7 @@ public:
         char buf1[100];
         memset(buf1,0,100);
         sprintf(buf1,"%d",line_no);
-#define WITHOUT_TIME_LABEL
+//#define WITHOUT_TIME_LABEL
 #ifdef WITHOUT_TIME_LABEL
         time="";
         label="";

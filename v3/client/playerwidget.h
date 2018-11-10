@@ -102,6 +102,7 @@ public:
     void set_output_data(CameraOutputData data)
     {
         lock.lock();
+        data_fps++;
         output_data=data;
         lock.unlock();
     }
@@ -175,6 +176,11 @@ protected:
                                      placeholders::_5)
 
                                 );
+            }
+
+            if(ClientConfig::show_processor_text){
+                draw_text(QString("data fps:").append(QString::number(data_fps_old)).toStdString(),VdPoint(200,340),100,PaintableData::Red,30);
+
             }
 
 #if 0
@@ -269,6 +275,12 @@ public slots:
     void timeout()
     {
         this->update();
+    }
+    void check_point()
+    {
+       // data_fps++;
+        data_fps_old=data_fps;
+        data_fps=0;
     }
     void choose_method(bool )
     {
@@ -444,6 +456,7 @@ private:
     QImage img;
     int timestamp;
     QTimer *tick_timer;
+    QTimer check_timer;
     CameraInputData camera_data;
     CameraOutputData output_data;
     QPainter *current_painter;
@@ -453,6 +466,8 @@ private:
     bool show_output;
     //bool show_text;
     int delay_frames;
+    int data_fps;
+    int data_fps_old;
 };
 
 #endif // PLAYERWIDGET_H

@@ -521,7 +521,6 @@ public:
 					p_cfg->pDetectCfg->IncidentDetectCfg.NonMotorAllowRegion[uNoEntryRegionNum].detRegion[j].y = da.Events[i].Vers[j].y;
 				}
 				uNonMotorAllowRegionNum++;
-				printf("uNonMotorAllowRegionNum = %d,%d\n",uNonMotorAllowRegionNum,da.Events[i].Vers.size());
 			}
 		}
 		p_cfg->pDetectCfg->IncidentDetectCfg.uIllegalParkRegionNum = uIllegalParkRegionNum;//禁止停车区域数
@@ -529,7 +528,6 @@ public:
 		p_cfg->pDetectCfg->IncidentDetectCfg.uNoEntryRegionNum = uNoEntryRegionNum;//驶离区域数
 		p_cfg->pDetectCfg->IncidentDetectCfg.uNoPersonAllowRegionNum = uNoPersonAllowRegionNum;//禁止行人区域数
 		p_cfg->pDetectCfg->IncidentDetectCfg.uNonMotorAllowRegionNum = uNonMotorAllowRegionNum;//禁止非机动车区域数
-		printf("uNonMotorAllowRegionNum1 = %d\n",p_cfg->pDetectCfg->IncidentDetectCfg.uNonMotorAllowRegionNum);
 #ifndef TEST_CLIENT
 #ifdef TEST_PROGRAM
 		RestParams_test(p_cfg->pCfgs, DetLine, &p_cfg->pDetectCfg->FvdDetectCfg, &p_cfg->pDetectCfg->IncidentDetectCfg, p_cfg->pParams);
@@ -952,6 +950,7 @@ public:
         //禁停
         for( i = 0; i < p_cfg->p_outbuf->INCIDENToutbuf.uIllegalParkNum; i++)
         {
+
             vector<VdPoint> Vers;
             for(int j = 0; j < 4; j++)
             {
@@ -960,7 +959,9 @@ public:
             }
             //id = p_cfg->p_outbuf->INCIDENToutbuf.IllegalParkBox[i].uIncidentID;
             EventObjects.push_back(EventRegionObjectOutput(Vers,EventRegion::STOP_INVALID,p_cfg->p_outbuf->INCIDENToutbuf.IllegalParkBox[i].uIncidentID));
+			prt(info,"IllegalPark ID %d",p_cfg->p_outbuf->INCIDENToutbuf.IllegalParkBox[i].uIncidentID);
         }
+		prt(info,"IllegalPark num =%d",p_cfg->p_outbuf->INCIDENToutbuf.uIllegalParkNum);
         //逆行
         for( i = 0; i < p_cfg->p_outbuf->INCIDENToutbuf.uOppositeDirDriveNum; i++)
         {
@@ -971,7 +972,9 @@ public:
                                        p_cfg->p_outbuf->INCIDENToutbuf.OppositeDirDriveBox[i].IncidentBox[j].y));
             }
             EventObjects.push_back(EventRegionObjectOutput(Vers,EventRegion::REVERSE_DRIVE,p_cfg->p_outbuf->INCIDENToutbuf.OppositeDirDriveBox[i].uIncidentID));
-        }
+       	    prt(info,"OppositeDirDrive ID %d",p_cfg->p_outbuf->INCIDENToutbuf.OppositeDirDriveBox[i].uIncidentID);
+		}
+		prt(info,"OppositeDirDrive Num =%d",p_cfg->p_outbuf->INCIDENToutbuf.uOppositeDirDriveNum);
         //驶离
         for( i = 0; i < p_cfg->p_outbuf->INCIDENToutbuf.uOffLaneNum; i++)
         {
@@ -982,8 +985,9 @@ public:
                                        p_cfg->p_outbuf->INCIDENToutbuf.OffLaneBox[i].IncidentBox[j].y));
             }
             EventObjects.push_back(EventRegionObjectOutput(Vers,EventRegion::DRIVE_AWAY,p_cfg->p_outbuf->INCIDENToutbuf.OffLaneBox[i].uIncidentID));
-
+			prt(info,"OffLane ID %d",p_cfg->p_outbuf->INCIDENToutbuf.OffLaneBox[i].uIncidentID);
         }
+		prt(info,"OffLane Num =%d",p_cfg->p_outbuf->INCIDENToutbuf.uOffLaneNum);
         //禁止行人
         for( i = 0; i < p_cfg->p_outbuf->INCIDENToutbuf.uNoPersonAllowNum; i++)
         {
@@ -994,8 +998,9 @@ public:
                                        p_cfg->p_outbuf->INCIDENToutbuf.NoPersonAllowBox[i].IncidentBox[j].y));
             }
             EventObjects.push_back(EventRegionObjectOutput(Vers,EventRegion::NO_PEDESTRIANTION,p_cfg->p_outbuf->INCIDENToutbuf.NoPersonAllowBox[i].uIncidentID));
-
+			prt(info,"NoPersonAllow ID %d",p_cfg->p_outbuf->INCIDENToutbuf.NoPersonAllowBox[i].uIncidentID);
         }
+		prt(info,"NoPersonAllow Num =%d",p_cfg->p_outbuf->INCIDENToutbuf.uNoPersonAllowNum);
         //拥堵
         for( i = 0; i < p_cfg->p_outbuf->INCIDENToutbuf.uCongestionNum; i++)
         {
@@ -1006,8 +1011,9 @@ public:
                                        p_cfg->p_outbuf->INCIDENToutbuf.CongestionBox[i].IncidentBox[j].y));
             }
             EventObjects.push_back(EventRegionObjectOutput(Vers, EventRegion::CONGESTION,p_cfg->p_outbuf->INCIDENToutbuf.CongestionBox[i].uIncidentID));
-
+			prt(info,"Congestion ID %d",p_cfg->p_outbuf->INCIDENToutbuf.CongestionBox[i].uIncidentID);
         }
+		prt(info,"Congestion Num =%d",p_cfg->p_outbuf->INCIDENToutbuf.uCongestionNum);
         //抛洒物
         //prt(info,"alg rst %d", p_cfg->p_outbuf->INCIDENToutbuf.uAbandonedObjectNum);
         for( i = 0; i < p_cfg->p_outbuf->INCIDENToutbuf.uAbandonedObjectNum; i++)
@@ -1031,8 +1037,9 @@ public:
 					p_cfg->p_outbuf->INCIDENToutbuf.NonMotorAllowBox[i].IncidentBox[j].y));
 			}
 			EventObjects.push_back(EventRegionObjectOutput(Vers,EventRegion::NON_MOTOR,p_cfg->p_outbuf->INCIDENToutbuf.NonMotorAllowBox[i].uIncidentID));
-
+			prt(info,"NonMotorAllow ID %d",p_cfg->p_outbuf->INCIDENToutbuf.NonMotorAllowBox[i].uIncidentID);
 		}
+		prt(info,"NonMotorAllow Num =%d",p_cfg->p_outbuf->INCIDENToutbuf.uNonMotorAllowNum);
         MvdProcessorOutputData out(MvdDetectedObjects,
                                    CurrentVehicleNumber,
                                    Visibility,
