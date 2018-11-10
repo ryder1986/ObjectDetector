@@ -106,6 +106,7 @@ void VideoSource::run()
     while(true){
 
         lock.lock();
+         prt(info,"timepoint  frame start %ld", get_time_point_ms());
         if(quit_flg){
             break;
         }
@@ -113,7 +114,11 @@ void VideoSource::run()
         if( vcap.isOpened()){
             flag_retry=0;
             frame.release();
+            prt(info,"timepoint  read start %ld", get_time_point_ms());
+
             bool rt= vcap.read(frame);
+            prt(info,"timepoint  read end %ld", get_time_point_ms());
+
             if(!rt){
                 // cout<<url.data()<<" get frame error!"<<endl;
                 prt(info,"get frame fail,restart video capture %s", url.data());
@@ -131,6 +136,8 @@ void VideoSource::run()
                 prt(info,"%s get frame error,retrying ... ", url.data());
                 continue;
             }else{
+                prt(info,"timepoint  frame start1 %ld", get_time_point_ms());
+
                 long int ts=vcap.get(CV_CAP_PROP_POS_MSEC);
                 long int fs=vcap.get(CV_CAP_PROP_POS_FRAMES);
                 int dis=fs-old_frame_num;
@@ -162,6 +169,8 @@ void VideoSource::run()
                 {
                     //prt(info,"running %s",url.data());
                 }
+                prt(info,"timepoint  frame start2 %ld", get_time_point_ms());
+
                 frame_lock.lock();
                 if(frame.rows>0&&frame.cols>0){
                     frame_list.push_back(frame);
@@ -173,6 +182,7 @@ void VideoSource::run()
                     }
                 }
                 frame_lock.unlock();
+                prt(info,"timepoint  frame start3 %ld", get_time_point_ms());
 
                 if(frame_wait_time)
                     this_thread::sleep_for(chrono::milliseconds( frame_wait_time));
@@ -196,6 +206,7 @@ void VideoSource::run()
             prt(info,"open url err:%s",url.data());
         }
         lock.unlock();
+         prt(info,"timepoint  frame done %ld", get_time_point_ms());
         this_thread::sleep_for(chrono::milliseconds(10));
     }
     prt(info,"thread is quiting");

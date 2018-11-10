@@ -103,12 +103,14 @@ public:
 
     bool get_frame(Mat &frame, int &timestamp)
     {
+
         if(get_pic(frame))
             return true;
 
 
         bool ret=false;
         frame_lock.lock();
+      //prt(info,"timepoint fetch start %ld", get_time_point_ms());
 #if 0
         if(frame_list.size()>0){
           //  frame_list.front().copyTo(frame);
@@ -151,6 +153,7 @@ public:
             ret=false;
         }
 #endif
+       //  prt(info,"timepoint   fetch end %ld", get_time_point_ms());
         frame_lock.unlock();
         return ret;
     }

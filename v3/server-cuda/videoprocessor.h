@@ -1292,6 +1292,7 @@ public:
     int PersonFlow2;
     int CurrentPersionCount;
     vector <EventRegionObjectOutput> EventObjects;
+    int NewEventFlag;
     MvdProcessorOutputData(JsonPacket p):JsonData(p)
     {
         decode();
@@ -1304,7 +1305,7 @@ public:
                            vector<VdRect> is_rct,
                            vector<VdRect> rd_rct,vector<VdRect> da_rct,
                            vector<VdRect> np_rct, vector<LinePoint> cpt, vector<VdRect> ao_rct,
-                           vector <EventRegionObjectOutput> eo ):
+                           vector <EventRegionObjectOutput> eo , int new_flag):
         MvdDetectedObjects(fs),
         CurrentVehicleNumber(cr),
         Visibility(vy),
@@ -1312,14 +1313,14 @@ public:
         LaneOutputData(la),
         DegreeData(da),
         PersonFlow1(p1),
-        PersonFlow2(p2),  EventObjects(eo)
+        PersonFlow2(p2),  EventObjects(eo), NewEventFlag(new_flag)
 
     {
         encode();
     }
     MvdProcessorOutputData(vector <ObjectRect> fs, int cr, int vy, int ve,
                            vector <LaneOutputJsonData> la,  vector <DegreeJsonData> da,int p1,int p2,
-                           vector <EventRegionObjectOutput> eo ):
+                           vector <EventRegionObjectOutput> eo ,int new_flag):
         MvdDetectedObjects(fs),
         CurrentVehicleNumber(cr),
         Visibility(vy),
@@ -1327,7 +1328,7 @@ public:
         LaneOutputData(la),
         DegreeData(da),
         PersonFlow1(p1),
-        PersonFlow2(p2),  EventObjects(eo)
+        PersonFlow2(p2),  EventObjects(eo), NewEventFlag(new_flag)
 
     {
         encode();
@@ -1347,6 +1348,7 @@ public:
             DECODE_INT_MEM(PersonFlow1);
             DECODE_INT_MEM(PersonFlow2);
             DECODE_INT_MEM(CurrentPersionCount);
+			DECODE_INT_MEM(NewEventFlag);
         }catch(exception e){
             PRT_DECODE_EXCEPTION
         }
@@ -1366,6 +1368,7 @@ public:
             ENCODE_INT_MEM(PersonFlow1);
             ENCODE_INT_MEM(PersonFlow2);
             ENCODE_INT_MEM(CurrentPersionCount);
+			ENCODE_INT_MEM(NewEventFlag);
         }catch(exception e){
             PRT_DECODE_EXCEPTION
         }

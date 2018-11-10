@@ -10,7 +10,8 @@
 #include <list>
 
 #define MAX_CAM_NUM 1000
-#define COUNT_SECONDS 300
+#define MAX_LANE_NUM 10000
+#define COUNT_SECONDS 5
 #define RECORD_SIZE 100
 class DatabaseInstance
 {
@@ -380,8 +381,8 @@ private:
         default:break;
 
         }
-       // return "1";
-prt(info,"inserting pic2");
+        // return "1";
+        prt(info,"inserting pic2");
         putText(frame, str, Point(100,130),CV_FONT_HERSHEY_SIMPLEX,1,Scalar(0,255,255),3,8);
         VdRect rct= vers_2_rect(region);
         VdPoint offset(rct.x,rct.y);
@@ -395,7 +396,7 @@ prt(info,"inserting pic2");
             for(int i=0;i<outline.size()-1;i++){
                 VdPoint start=add_point_offset(outline[i],offset);
                 VdPoint end=add_point_offset(outline[i+1],offset);
-              line(frame, Point(start.x,start.y),Point( end.x,end.y), Scalar(255, 255 ,0), 3, 8, 0 );
+                line(frame, Point(start.x,start.y),Point( end.x,end.y), Scalar(255, 255 ,0), 3, 8, 0 );
             }
             VdPoint start=add_point_offset(outline.front(),offset);
             VdPoint end=add_point_offset(outline.back(),offset);
@@ -406,18 +407,18 @@ prt(info,"inserting pic2");
         //        string passwd="root";
         //        string db="AIPD";
         //        string host="localhost";
-   prt(info,"inserting pic3");
-       imwrite(pic_path,frame);
+        prt(info,"inserting pic3");
+        imwrite(pic_path,frame);
         prt(info,"inserting pic4");
     }
 
     int insert_video(int cam_index,string path)
     {
 
-              buffer_lock.lock();
+        buffer_lock.lock();
         if(buffer_frames[cam_index-1].size()==0)
         {
-              buffer_lock.unlock();
+            buffer_lock.unlock();
             return 0;
 
         }
@@ -427,7 +428,7 @@ prt(info,"inserting pic2");
         //   cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('M', 'J', 'P', 'G'), 15,  cv::Size(fst.cols, fst.rows));
 
         //   cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('D', 'I', 'V', 'X'), 15,  cv::Size(fst.cols, fst.rows));
-      //  cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', '2', '6', '4'), 15,  cv::Size(fst.cols, fst.rows));
+        //  cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', '2', '6', '4'), 15,  cv::Size(fst.cols, fst.rows));
         cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', '2', '6', '4'), 10,  cv::Size(fst.cols, fst.rows));
 
 
@@ -459,8 +460,8 @@ prt(info,"inserting pic2");
             recVid<<mt;
         }
 
-//        recVid.release();
-//        return 0;
+        //        recVid.release();
+        //        return 0;
 
 
         //        for(int i=0;i<100;i++){
@@ -551,6 +552,60 @@ prt(info,"inserting pic2");
         stream<<".png";
         return stream.str();
     }
+    void store_frame(Mat frame,int index)
+    {
+        Mat mt;frame.copyTo(mt);
+        buffer_lock.lock();
+        if(buffer_frames[index-1].size()>RECORD_SIZE){
+            buffer_frames[index-1].erase(buffer_frames[index-1].begin());
+        }
+        buffer_frames[index-1].push_back(mt);
+        buffer_lock.unlock();
+    }
+    void handle_result(CameraOutputData data,int index,Mat frame)
+    {
+        if(index<1||index>cms.size())
+        {
+            prt(info,"err index %d inserting database,now %d cameras avliable",index,cms.size());
+        }
+        store_frame(frame,index);
+        //Timer2 t2;t2.AsyncWait(0,bind(&App::store_frame,this,placeholders::_1),frame);
+        prt(info,"handle camera %d",index);
+        CameraInputData input=cms[index-1]->get_data();
+
+        for(int i=0;i<data.DetectionResult.size();i++){
+            DetectRegionOutputData d=data.DetectionResult[i];
+            DetectRegionInputData  id= input.DetectRegion[i];
+            JsonPacket rst=d.Result;
+            //   prt(info," %s ",id.SelectedProcessor.data());
+            if(id.SelectedProcessor==LABEL_PROCESSOR_MVD){
+                MvdProcessorOutputData mvddata(rst);
+                if(mvddata.NewEventFlag)
+                for(EventRegionObjectOutput eo:mvddata.EventObjects){
+
+                    if(eo.EventID){
+                        prt(info," inserting event %d ",eo.Type);
+                        string picname;
+                        string videoname;
+                        string picpath("/ftphome/pic/");
+                        string videopath("/ftphome/video/");
+                        get_names(picname,videoname);
+                        picpath.append(picname);
+                        videopath.append(videoname);
+                       // Timer2 t2;
+                        Mat  frame_tmp;
+                        frame.copyTo(frame_tmp);
+                        // t2.AsyncWait(0,bind(&App::insert_video,this,placeholders::_1,placeholders::_2),index,videopath);
+                        insert_video(index,videopath);
+                        insert_picture(frame_tmp,eo.Vers,eo.Type,id.ExpectedAreaVers,picpath);
+                        database_insert_tis(get_sql_time(),eo.Type,picpath.data(),videopath.data());
+
+                    }
+                }
+            }
+        }
+        //SLEEP_HERE_MS(1000);
+    }
     void insert_database(CameraOutputData data,int index,Mat frame)
     {
 #if 1
@@ -566,15 +621,15 @@ prt(info,"inserting pic2");
         //        waitKey(0);
 
         Mat mt;
-        buffer_lock.lock();
+        // buffer_lock.lock();
         if(buffer_frames[index-1].size()>RECORD_SIZE){
             buffer_frames[index-1].erase(buffer_frames[index-1].begin());
             //  buffer_frames[index-1]
         }
 
-        frame.copyTo(mt);
+        //  frame.copyTo(mt);
         buffer_frames[index-1].push_back(mt);
-        buffer_lock.unlock();
+        // buffer_lock.unlock();
 
         //        if(buffer_frames_test.size()>100){
         //            buffer_frames_test.erase(buffer_frames_test.begin());
@@ -687,10 +742,10 @@ prt(info,"inserting pic2");
                     if(!exist_in_last(eo,index)){
                         prt(info," inserting  event %d ",eo.Type);
 
-//                        imwrite("/ftphome/video/first.png",buffer_frames[0].front());
-//                        imwrite("/ftphome/video/last.png",buffer_frames[0].back());
+                        //                        imwrite("/ftphome/video/first.png",buffer_frames[0].front());
+                        //                        imwrite("/ftphome/video/last.png",buffer_frames[0].back());
 
-//                        prt(info,"buf sz -------------------> %d",buffer_frames[0].size());
+                        //                        prt(info,"buf sz -------------------> %d",buffer_frames[0].size());
 
                         string picname;
                         string videoname;
@@ -702,26 +757,26 @@ prt(info,"inserting pic2");
                         Timer2 t2;
                         Mat  frame_tmp;
                         frame.copyTo(frame_tmp);
-                       // t2.AsyncWait(0,bind(&App::insert_video,this,placeholders::_1,placeholders::_2),index,videopath);
+                        // t2.AsyncWait(0,bind(&App::insert_video,this,placeholders::_1,placeholders::_2),index,videopath);
                         insert_video(index,videopath);
 
-                        buffer_lock.lock();
+                        // buffer_lock.lock();
 
-                            prt(info,"inserting pic");
-                       insert_picture(frame_tmp,eo.Vers,eo.Type,id.ExpectedAreaVers,picpath);
-                    //   prt(info,"inserting pic done");
-                        buffer_lock.unlock();
+                        prt(info,"inserting pic");
+                        insert_picture(frame_tmp,eo.Vers,eo.Type,id.ExpectedAreaVers,picpath);
+                        //   prt(info,"inserting pic done");
+                        //  buffer_lock.unlock();
 
-                       //insert_picture(frame,eo.Vers,eo.Type,id.ExpectedAreaVers,picpath);
+                        //insert_picture(frame,eo.Vers,eo.Type,id.ExpectedAreaVers,picpath);
 #if 0
                         string name= insert_pic_ex(frame,eo.Vers,eo.Type,id.ExpectedAreaVers);
                         string path("/ftphome/pic/");
                         path.append(name);
 #endif
-                        buffer_lock.lock();
+                        //buffer_lock.lock();
 
                         database_insert_tis(get_sql_time(),eo.Type,picpath.data(),videopath.data());
-                        buffer_lock.unlock();
+                        // buffer_lock.unlock();
 
                     }
                 }
@@ -737,6 +792,10 @@ prt(info,"inserting pic2");
 
     }
 #if 1
+    inline bool exist_event(EventRegionObjectOutput event,int index)
+    {
+
+    }
     inline bool exist_in_last(EventRegionObjectOutput event,int index)
     {
         for(EventRegionObjectOutput e:last_events[index-1]){
@@ -807,14 +866,17 @@ prt(info,"inserting pic2");
         int speed_count[100];
 
 
-        int old_exist[100];//max lane num
-        memset(old_exist,0,100);
-        while((get_time_second()%6)){
+        int old_exist[MAX_LANE_NUM];//max lane num
+        memset(old_exist,0,MAX_LANE_NUM);
+        while((get_time_second()%COUNT_SECONDS)){
             this_thread::sleep_for(chrono::microseconds(1000000));
         }
         while(!quit_count){
-            if(count_time--==1){
-                prt(info,"time up , start cal ---------------------------->");
+
+            //if(count_time--==1){
+            if(((count_time--%COUNT_SECONDS<2)&&((get_time_second()%COUNT_SECONDS)==0))){
+                string sql_time=get_sql_time();
+                prt(info,"time up , liuliang ---------------------------->");
                 // lock.lock();
                 int camera_size=private_data.CameraData.size();
                 for(int loop_cams=0;loop_cams<camera_size;loop_cams++){
@@ -827,8 +889,8 @@ prt(info,"inserting pic2");
                         DetectRegionInputData dr=  cd.DetectRegion[loop_regions];
                         MvdProcessorInputData mvddata(  dr.ProcessorData);
                         int lane_size=mvddata.LaneData.size();
-                        if(lane_size>=100){
-                            prt(info,"max lane  100 ,err");
+                        if(lane_size>=MAX_LANE_NUM){
+                            prt(info,"max lane  ,err");
                             continue;
                         }
 
@@ -849,7 +911,7 @@ prt(info,"inserting pic2");
                             }
                         }
                         for(int j=0;j<mvddata.LaneData.size();j++){
-                            database_insert_vs(j,speed_count,car_count);
+                            database_insert_vs(j,speed_count,car_count,sql_time);
                         }
 
 
@@ -870,14 +932,15 @@ prt(info,"inserting pic2");
     stream<< "'";\
     stream<<xxx;\
     stream<< "'";
-    void database_insert_vs(int lane_index,int speed_count[],int car_count[])
+    void database_insert_vs(int lane_index,int speed_count[],int car_count[],string sql_time)
     {
         int vs_record_id=3;
 
         //strstream tmp1;tmp1<<COUNT_SECONDS;
         char buf_tmp[100];memset(buf_tmp,0,100);sprintf(buf_tmp,"%d",COUNT_SECONDS);
         string vs_sp(buf_tmp);
-        string vs_sst=get_sql_time();
+        // string vs_sst=get_sql_time();
+        string vs_sst=sql_time;
         string vs_analyce_id="2";
         string vs_savenue="12345";
         string vs_CameraID="1";
@@ -951,6 +1014,88 @@ prt(info,"inserting pic2");
         ins.query(buf1);
     }
 
+
+    void database_insert_vs1(int lane_index,int speed_count[],int car_count[],string sql_time)
+    {
+        int vs_record_id=3;
+
+        //strstream tmp1;tmp1<<COUNT_SECONDS;
+        char buf_tmp[100];memset(buf_tmp,0,100);sprintf(buf_tmp,"%d",COUNT_SECONDS);
+        string vs_sp(buf_tmp);
+        // string vs_sst=get_sql_time();
+        string vs_sst=sql_time;
+        string vs_analyce_id="2";
+        string vs_savenue="12345";
+        string vs_CameraID="1";
+        string vs_LaneID="12";
+        string vs_VSum="";//car_count
+        string vs_VPSum="0";
+        string vs_VNSum="0";
+        string vs_VDSum="0";
+        string vs_VBSum="0";
+        string vs_VCSum="0";//car_count
+        string vs_VMSum="0";
+        string vs_VKSum="0";
+        if(car_count[lane_index]){
+            prt(info,"car num %d, speed total %d",car_count[lane_index],speed_count[lane_index]);
+            int average_speed=speed_count[lane_index]/car_count[lane_index];
+            memset(buf_tmp,0,100);
+            sprintf(buf_tmp,"%d",average_speed);
+            //  tmp2<<average_speed;
+        }else{
+            memset(buf_tmp,0,100);
+            sprintf(buf_tmp,"%d",0);
+        }
+        string vs_ASpeed(buf_tmp);
+        string vs_ATime="1";
+        string vs_ASpace="1";
+        string vs_AVM="1";
+        string vs_AOccupy="1";
+        string vs_RState="1";
+        DatabaseInstance &ins=DatabaseInstance::get_instance();
+        stringstream stream;
+        stream<< "INSERT INTO VS \
+                 ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `LaneID`,\
+                   `VSum`, `VPSum`, `VNSum`, `VTSum`, `VBSum`, `VCSum`, `VMSum`,\
+                   `VKSum`, `ASpeed`, `ATime`, `ASpace`, `AVM`, `AOccupy`,`RState`) VALUES";
+                 stream<< "(";
+
+        INSERT_DB_MEM(vs_record_id) stream<< ",";
+        INSERT_DB_MEM(vs_sst) stream<< ",";
+        INSERT_DB_MEM(vs_sp) stream<< ",";
+        INSERT_DB_MEM(vs_analyce_id) stream<< ",";
+        INSERT_DB_MEM(vs_savenue) stream<< ",";
+        INSERT_DB_MEM(vs_CameraID) stream<< ",";
+        INSERT_DB_MEM(vs_LaneID) stream<< ",";
+
+
+        INSERT_DB_MEM(car_count[lane_index]) stream<< ",";
+        INSERT_DB_MEM(vs_VPSum) stream<< ",";
+        INSERT_DB_MEM(vs_VNSum) stream<< ",";
+        INSERT_DB_MEM(vs_VDSum) stream<< ",";
+        INSERT_DB_MEM(vs_VBSum) stream<< ",";
+        INSERT_DB_MEM(car_count[lane_index];) stream<< ",";
+        INSERT_DB_MEM(vs_VMSum) stream<< ",";
+
+        INSERT_DB_MEM(vs_VKSum) stream<< ",";
+        INSERT_DB_MEM(vs_ASpeed) stream<< ",";
+        INSERT_DB_MEM(vs_ATime) stream<< ",";
+        INSERT_DB_MEM(vs_ASpace) stream<< ",";
+        INSERT_DB_MEM(vs_AVM) stream<< ",";
+        INSERT_DB_MEM(vs_AOccupy) stream<< ",";
+        INSERT_DB_MEM(vs_RState)
+                stream<< ");";
+
+        prt(info,"%s",stream.str().data());
+        if(stream.str().size()>1000){
+            prt(info,"sql too long");
+            return;
+        }
+        char buf1[1000];
+        memset(buf1,0,1000);
+        sprintf(buf1,"%s",stream.str().data());
+        ins.query(buf1);
+    }
     //////db end///////
 private:
     vector <Session*> *stream_cmd;//clients who connected to our server

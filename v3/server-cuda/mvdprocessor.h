@@ -843,6 +843,9 @@ public:
             MvdDetectedObjects.push_back(obj);
         }
         int CurrentVehicleNumber = p_cfg->p_outbuf->FVDoutbuf.uObjNum;
+		int CurrentCarNumber = p_cfg->p_outbuf->FVDoutbuf.udetCarTotalNum;
+		int CurrentBusNumber = p_cfg->p_outbuf->FVDoutbuf.udetBusTotalNum;
+		int CurrentTruckNumber = p_cfg->p_outbuf->FVDoutbuf.udetTruckTotalNum;
         int Visibility = p_cfg->p_outbuf->FVDoutbuf.Visbility;
         int VideoState = p_cfg->p_outbuf->FVDoutbuf.VideoException;
 
@@ -942,11 +945,8 @@ public:
 
 
 		}*/
-
-
         vector <EventRegionObjectOutput> EventObjects;
 		//incident 
-        //incident
         //禁停
         for( i = 0; i < p_cfg->p_outbuf->INCIDENToutbuf.uIllegalParkNum; i++)
         {
@@ -1040,6 +1040,8 @@ public:
 			prt(info,"NonMotorAllow ID %d",p_cfg->p_outbuf->INCIDENToutbuf.NonMotorAllowBox[i].uIncidentID);
 		}
 		prt(info,"NonMotorAllow Num =%d",p_cfg->p_outbuf->INCIDENToutbuf.uNonMotorAllowNum);
+		//此帧有无新事件标记
+		int new_flag = p_cfg->p_outbuf->INCIDENToutbuf.uNewIncidentFlag;
         MvdProcessorOutputData out(MvdDetectedObjects,
                                    CurrentVehicleNumber,
                                    Visibility,
@@ -1049,7 +1051,8 @@ public:
                                    PersonFlow1,
                                    PersonFlow2,
 
-                                   EventObjects);
+                                   EventObjects,
+								   new_flag);
         pkt=out.data();
     }
 };

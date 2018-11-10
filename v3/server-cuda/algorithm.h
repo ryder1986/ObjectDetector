@@ -109,7 +109,8 @@ typedef struct{
 	int   direction;//目标运动方向
 	int incident_continue_num[MAX_INCIDENT_TYPE];//交通事件持续的帧数
 	int incident_flag[MAX_INCIDENT_TYPE];//交通事件是否标记
-	bool cal_incident[MAX_INCIDENT_TYPE];//交通是否计算
+	bool cal_incident[MAX_INCIDENT_TYPE];//是否认为是交通事件
+	int  sign_incident;//用于标记新产生的事件
 }CTarget;
 
 ///////////////////////////////////////////////////////////////////////////////////////////检测参数
@@ -271,11 +272,13 @@ typedef struct{
 }PVDOUTBUF;
 
 typedef struct{
+	Uint16 uNewIncidentFlag;//是否新事件标记
 	Uint16 uIncidentID;//事件ID
 	CPoint IncidentBox[4];//事件框
 }INCIDENTBOX;
 
 typedef struct{
+	Uint16 uNewIncidentFlag;//新产生事件标记
 	Uint16 uIllegalParkNum;
 	INCIDENTBOX IllegalParkBox[MAX_INCIDENT_NUM];//违法停车
 	Uint16 uOppositeDirDriveNum;

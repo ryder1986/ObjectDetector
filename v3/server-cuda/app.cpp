@@ -70,7 +70,11 @@ void App::process_camera_data(Camera *camera, CameraOutputData data)
     }
     //prt(info,"index %d  data rcvd",idx);
     //lock.lock();
-    insert_database(data,idx+1,cms[idx]->screenshot);
+
+    Timer2 t2;
+    t2.AsyncWait(0,bind(&App::handle_result,this,placeholders::_1,placeholders::_2,placeholders::_3),data,idx+1,cms[idx]->screenshot);
+ //   t2.AsyncWait(0,bind(&App::insert_database,this,placeholders::_1,placeholders::_2,placeholders::_3),data,idx+1,cms[idx]->screenshot);
+    //insert_database(data,idx+1,cms[idx]->screenshot);
     if(udp_fd<=0)
         udp_fd=Socket::UdpCreateSocket(5000);
    // lock.unlock();

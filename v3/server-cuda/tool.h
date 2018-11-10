@@ -697,4 +697,45 @@ inline char * get_time_string()
 //#define PRT_DECODE_EXCEPTION prt(info,"error in decoding %s data:=>%s<=",typeid(this).name(),config.str().data());
 //#define PRT_ENCODE_EXCEPTION prt(info,"error in encoding %s data:=>%s<=",typeid(this).name(),config.str().data());
 #define PRT_ENCODE_EXCEPTION prt(debug,"error in encoding %s data:=>%s<=",typeid(this).name(),config.str().data());
+
+
+#define PRT_DECODE_EXCEPTION prt(debug,"error in decoding %s data:=>%s<=",typeid(this).name(),config.str().data());
+#define PRT_ENCODE_EXCEPTION prt(debug,"error in encoding %s data:=>%s<=",typeid(this).name(),config.str().data());
+//#define PRT_DECODE_EXCEPTION prt(info,"error in decoding %s data:=>%s<=",typeid(this).name(),config.str().data());
+//#define PRT_ENCODE_EXCEPTION prt(info,"error in encoding %s data:=>%s<=",typeid(this).name(),config.str().data());
+class ClientConfig{
+public:
+    static bool show_processor_text;
+    static bool show_camera_state;
+};
+#define SLEEP_HERE     \
+while(true){\
+this_thread::sleep_for(chrono::microseconds(1000));\
+}
+#define PAUSE_HERE_FOREVER     \
+while(true){\
+this_thread::sleep_for(chrono::microseconds(1000));\
+}
+#define SLEEP_HERE_MS(ms)     \
+do{\
+this_thread::sleep_for(chrono::milliseconds(ms));\
+}while(false)
+#define PAUSE_HERE_3s     \
+while(true){\
+static int tmp=0;if(tmp++>3){prt(info,"pause 3 seconds done");break;}this_thread::sleep_for(chrono::microseconds(1000000));\
+}
+
+#define DELETE_POINTER_LATER(tp,name,msec)\
+{\
+tp addr=name;\
+    \
+std::thread([addr](){\
+    this_thread::sleep_for(chrono::milliseconds(msec));\
+    delete addr;/*prt(info,"delete %p ok",addr);*/\
+}\
+).detach();\
+    \
+name=NULL;\
+}
+
 #endif // TOOL1_H
