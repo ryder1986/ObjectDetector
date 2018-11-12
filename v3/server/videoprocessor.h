@@ -1328,7 +1328,9 @@ public:
                 r.FarArea[i].y+=offy;
                 draw_circle(r.FarArea[i],3,PaintableData::Colour::Red,2);
                 draw_circle(r.FarArea[i],1,PaintableData::Colour::Blue,2);
-                //draw_text("f",r.FarArea[i],1,PaintableData::Colour::Green,2);
+                if(seizing){
+                    draw_text("far area",r.FarArea[i],1,PaintableData::Colour::Green,2);
+                }
             }
             draw_vers_line(r.FarArea,draw_line);
 
@@ -1337,8 +1339,9 @@ public:
                 r.NearArea[i].y+=offy;
                 draw_circle(r.NearArea[i],3,PaintableData::Colour::Red,2);
                 draw_circle(r.NearArea[i],1,PaintableData::Colour::Red,2);
-                //draw_text("n",r.NearArea[i],1,PaintableData::Colour::Green,2);
-
+                if(seizing){
+                    draw_text("near area",r.NearArea[i],1,PaintableData::Colour::Green,2);
+                }
             }
             draw_vers_line(r.NearArea,draw_line);
 
@@ -1347,7 +1350,9 @@ public:
                 r.LaneArea[i].y+=offy;
                 draw_circle(r.LaneArea[i],3,PaintableData::Colour::Red,2);
                 draw_circle(r.LaneArea[i],1,PaintableData::Colour::Red,2);
-                //draw_text("l",r.LaneArea[i],1,PaintableData::Colour::Green,2);
+                if(seizing){
+                    draw_text("lane area",r.LaneArea[i],1,PaintableData::Colour::Green,2);
+                }
             }
             draw_vers_line(r.LaneArea,draw_line);
 

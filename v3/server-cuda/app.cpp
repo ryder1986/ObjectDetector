@@ -10,7 +10,7 @@ App::App(ConfigManager *p_config_manager):str_stream(""),watch_dog(bind(&App::ch
     stream_cmd=NULL;
     restart_all();
     sql_need_connect=true;
-    p_count_thread=new thread(bind(&App::count_fun1,this));
+    p_count_thread=new thread(bind(&App::flow_thread,this));
     static Tcpserver server_cmd(stream_cmd,
                                 12345,
                                 bind(&App::process_client_cmd,

@@ -176,6 +176,12 @@ typedef struct
 	BOOL		   bInfoValid;				//检测器结果有效
 	Uint16	       bVehicleSta;		    //车入车出状态
 	Uint32         uVehicleFlow;          //车流量
+	Uint32         uCarFlow;              //car流量
+	Uint32         uBusFlow;              //bus流量
+	Uint32         uTruckFlow;            //truck流量
+	Uint32         uBicycleFlow;          //Bicycle流量
+	Uint32         uMotorbikeFlow;        //Motorbike流量
+	Uint16         direction;             //车道方向
 	Uint16         uRegionVehicleNumber;  //区域车辆数
 	Uint16	       calarflag;	           //车占有线圈状态
 	Uint16         uVehicleDirection;     //车辆运行方向
@@ -185,7 +191,9 @@ typedef struct
 	CPoint         QueLine[2];            //排队长度线
 	Uint16         uLastVehicleLength;    //最后一辆车的位置
 	CPoint	       LastVehiclePos[2];     //最后一辆车的位置
-	Uint16	       uVehicleHeadtime;	  //车头时距
+	Uint16	       uVehicleHeadtime;	   //车头时距
+	Uint16         uVehicleHeadspace;      //车头间距
+	Uint16         uVehicleDensity;        //车辆密度
 	bool           IsCarInTailFlag;      //尾部区域占有标志
 	Uint16	       uReserved[20];			//预留		
 }LANERESULTDATA;
@@ -227,6 +235,12 @@ typedef struct
 typedef struct{
 	Uint16	       LaneNo;                //车道号
 	Uint32         uVehicleFlow;          //车流量
+	Uint32         uCarFlow;              //car流量
+	Uint32         uBusFlow;              //bus流量
+	Uint32         uTruckFlow;            //truck流量
+	Uint32         uBicycleFlow;          //Bicycle流量
+	Uint32         uMotorbikeFlow;        //Motorbike流量
+	Uint16         LaneDirection;             //车道方向
 	Uint16         uRegionVehicleNumber;  //区域车辆数
 	Uint16	       bFlowRegionState;	   //车入车出状态
 	Uint16         uVehicleDirection;     //车辆运行方向
@@ -235,9 +249,12 @@ typedef struct{
     Uint16         uVehicleQueueLength;   //排队长度
     CPoint         QueLine[2];            //排队长度线
 	Uint16	       uVehicleHeadtime;	   //车头时距
+	Uint16         uVehicleHeadspace;      //车头间距
+	Uint16         uVehicleDensity;        //车辆密度
 	Uint16         uLastVehicleLength;    //最后一辆车的位置
 	CPoint	       LastVehiclePos[2];
 	bool           IsCarInTailFlag;      //尾部区域占有标志
+
 	Uint16	       uReserved[20];			  //预留
 }LANEDETECTRESULT;
 
@@ -252,10 +269,10 @@ typedef struct{
 	Uint16           uDegreePoint[20][2];   //刻度点
 	CDetBox          detObj[100];//	检测框
 	Uint16           uObjNum;//检测框个数
-	Uint16          udetVehicleTotalNum;        //检测区域内车辆总数
-	Uint16          udetCarTotalNum;            //car num
-	Uint16          udetBusTotalNum;            //bus num
-	Uint16          udetTruckTotalNum;          //truck num
+	Uint16           udetVehicleTotalNum;        //检测区域内车辆总数
+	Uint16           udetCarTotalNum;            //car num
+	Uint16           udetBusTotalNum;            //bus num
+	Uint16           udetTruckTotalNum;          //truck num
 
 }FVDOUTBUF;
 
@@ -396,7 +413,8 @@ typedef struct tagCfgs
 	Uint32	uDetectOutSum[MAX_LANE];	//车出数
 	Uint16  uDetectVehicleSum[MAX_LANE];//车道内的车辆总数
 	Uint16  uStatQuePos[MAX_LANE][6];//统计排队长度
-	Uint16 uVehicleQueueLength[MAX_LANE];//各车道排队长度值
+	Uint16  uVehicleQueueLength[MAX_LANE];//各车道排队长度值
+	Uint16  LaneDirection[MAX_LANE];//车道方向
 
 	//对图像进行标定
 	int calibration_point[4][2];//标定区域四个点

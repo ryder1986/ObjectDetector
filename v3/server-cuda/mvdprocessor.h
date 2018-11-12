@@ -601,11 +601,18 @@ public:
         vector <LaneOutputJsonData> LaneOutputData;
         for( i = 0;  i <p_cfg->p_outbuf->FVDoutbuf.uLaneNum; i++)
         {
-            int laneNo, queLen, vehiNum, flow, speed,Farcarexist, Nearcarexist;
+            int laneNo, queLen, vehiNum, flow, speed,Farcarexist, Nearcarexist,carflow,busflow,truckflow,bicycleflow,motorbikeflow,lanedirection;
+			int timehead, spacetime, density;
             laneNo = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].LaneNo;
             queLen = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleQueueLength;
             vehiNum = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uRegionVehicleNumber;
-            flow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleFlow;
+			flow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleFlow;
+			carflow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uCarFlow;
+			busflow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uBusFlow;
+			truckflow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uTruckFlow;
+			bicycleflow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uBicycleFlow;
+			motorbikeflow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uMotorbikeFlow;
+			lanedirection = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].LaneDirection;
             speed = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleSpeed;
             VdPoint pt1( p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[0].x,
                     p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[0].y);
@@ -613,10 +620,12 @@ public:
                     p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[1].y );
 			Farcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].IsCarInTailFlag;
 			Nearcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].bFlowRegionState;
-
-			LaneOutputJsonData detLaneData = LaneOutputJsonData(laneNo, queLen, pt1, pt2, vehiNum, flow, speed
+			timehead = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleHeadtime;
+			spacetime = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleHeadspace;
+			density = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleDensity;
+			LaneOutputJsonData detLaneData = LaneOutputJsonData(laneNo, queLen, pt1, pt2, vehiNum, flow, carflow, busflow, truckflow, bicycleflow, motorbikeflow, lanedirection, speed
 				,p_cfg->p_outbuf->FVDoutbuf.uActualDetectLength[i],
-				p_cfg->p_outbuf->FVDoutbuf.uActualTailLength[i],Farcarexist,Nearcarexist);
+				p_cfg->p_outbuf->FVDoutbuf.uActualTailLength[i],Farcarexist,Nearcarexist,timehead,spacetime,density);
             LaneOutputData.push_back(detLaneData);
         }
         vector <DegreeJsonData> DegreeData; // on  lane points
@@ -852,11 +861,18 @@ public:
         vector <LaneOutputJsonData> LaneOutputData;
         for( i = 0;  i <p_cfg->p_outbuf->FVDoutbuf.uLaneNum; i++)
         {
-            int laneNo, queLen, vehiNum, flow, speed, Farcarexist, Nearcarexist;
+            int laneNo, queLen, vehiNum, flow, speed, Farcarexist, Nearcarexist,carflow,busflow,truckflow,bicycleflow,motorbikeflow,lanedirection;
+			int timehead, spacetime, density;
             laneNo = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].LaneNo;
             queLen = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleQueueLength;
             vehiNum = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uRegionVehicleNumber;
             flow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleFlow;
+            carflow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uCarFlow;
+            busflow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uBusFlow;
+            truckflow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uTruckFlow;
+            bicycleflow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uBicycleFlow;
+            motorbikeflow = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uMotorbikeFlow;
+            lanedirection = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].LaneDirection;
             speed = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleSpeed;
             VdPoint pt1( p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[0].x,
                     p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[0].y);
@@ -864,10 +880,12 @@ public:
                     p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].QueLine[1].y );
 			Farcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].IsCarInTailFlag;
 			Nearcarexist = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].bFlowRegionState;
-
-            LaneOutputJsonData detLaneData = LaneOutputJsonData(laneNo, queLen, pt1, pt2, vehiNum, flow, speed
+			timehead = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleHeadtime;
+			spacetime = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleHeadspace;
+			density = p_cfg->p_outbuf->FVDoutbuf.uEachLaneData[i].uVehicleDensity;
+            LaneOutputJsonData detLaneData = LaneOutputJsonData(laneNo, queLen, pt1, pt2, vehiNum, flow, carflow, busflow, truckflow, bicycleflow, motorbikeflow, lanedirection, speed
                                                                 ,p_cfg->p_outbuf->FVDoutbuf.uActualDetectLength[i],
-                                                                p_cfg->p_outbuf->FVDoutbuf.uActualTailLength[i],Farcarexist,Nearcarexist);
+                                                                p_cfg->p_outbuf->FVDoutbuf.uActualTailLength[i],Farcarexist,Nearcarexist,timehead,spacetime,density);
             LaneOutputData.push_back(detLaneData);
         }
         vector <DegreeJsonData> DegreeData; // on  lane points
@@ -1044,12 +1062,22 @@ public:
 		int new_flag = p_cfg->p_outbuf->INCIDENToutbuf.uNewIncidentFlag;
         MvdProcessorOutputData out(MvdDetectedObjects,
                                    CurrentVehicleNumber,
+								   CurrentCarNumber,
+								   CurrentBusNumber,
+								   CurrentTruckNumber,
+								   CurrentPersionCount,
+								   CurrentBicycleCount,
+								   CurrentMotorbikeCount,
                                    Visibility,
                                    VideoState,
                                    LaneOutputData,
                                    DegreeData,
                                    PersonFlow1,
                                    PersonFlow2,
+								   BicycleFlow1,
+								   BicycleFlow2,
+								   MotorbikeFlow1,
+								   MotorbikeFlow2,
 
                                    EventObjects,
 								   new_flag);

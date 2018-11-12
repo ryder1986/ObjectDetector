@@ -737,5 +737,13 @@ std::thread([addr](){\
     \
 name=NULL;\
 }
+inline string int_2_string(int num)
+{
+    char buf[1000];
+    memset(buf,0,1000);
+    sprintf(buf,"%d",num);
+    string str(buf);
+    return str;
+}
 
 #endif // TOOL1_H

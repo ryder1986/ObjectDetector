@@ -595,25 +595,45 @@ public:
     VdPoint EndQueuePoint;// queue end point
     int LaneVehicleNumber;// lane car count now
     int VehicleFlow;// flow total
+	int CarFlow;//car flow
+	int BusFlow;//bus flow
+	int TruckFlow;//truck flow;
+	int BicycleFlow;//bicycle flow
+	int MotorbikeFlow;//motorbike flow
+	int LaneDirection; //lane direction
     int VehicleSpeed;// near rect car's speed
     int NearActualLength;// near rect real size
     int FarActualLength;// far rect real size
     bool FarCarExist;
     bool NearCarExist;
+	int VehicleHeadtime;//  vehicle head time 
+	int VehicleHeadspace;// vehicle head space
+	int VehicleDensity;// vehicle density
     LaneOutputJsonData(JsonPacket pkt):JsonData(pkt)
     {
         decode();
     }
-    LaneOutputJsonData(int lo,int qh,VdPoint st,VdPoint et,int lr,int vw,int vd,int nh,int fh,bool fe,bool ne):
+    LaneOutputJsonData(int lo,int qh,VdPoint st,VdPoint et,int lr,int vw,int cw,int bw,int tw,int iw,int mw,int ln,int vd,int nh,int fh,bool fe,bool ne,int vt,int vs, int vy):
         LaneNo(lo),
         QueueLength(qh),
         StartQueuePoint(st),
         EndQueuePoint(et),
         LaneVehicleNumber(lr),
         VehicleFlow(vw),
+		CarFlow(cw),
+	    BusFlow(bw),
+	    TruckFlow(tw),
+        BicycleFlow(iw),
+	    MotorbikeFlow(mw), 
+		LaneDirection(ln),
         VehicleSpeed(vd),
         NearActualLength(nh),
-        FarActualLength(fh),FarCarExist(fe),NearCarExist(ne)
+        FarActualLength(fh),
+		FarCarExist(fe),
+		NearCarExist(ne),
+		VehicleHeadtime(vt),
+		VehicleHeadspace(vs),
+		VehicleDensity(vy)
     {
         encode();
     }
@@ -626,11 +646,20 @@ public:
             DECODE_JSONDATA_MEM(EndQueuePoint);
             DECODE_INT_MEM(LaneVehicleNumber);
             DECODE_INT_MEM(VehicleFlow);
+		    DECODE_INT_MEM(CarFlow);
+		    DECODE_INT_MEM(BusFlow);
+			DECODE_INT_MEM(TruckFlow);
+            DECODE_INT_MEM(BicycleFlow);
+		    DECODE_INT_MEM(MotorbikeFlow);
+		    DECODE_INT_MEM(LaneDirection);
             DECODE_INT_MEM(VehicleSpeed);
             DECODE_INT_MEM(NearActualLength);
             DECODE_INT_MEM(FarActualLength);
             DECODE_BOOL_MEM(FarCarExist);
             DECODE_BOOL_MEM(NearCarExist);
+			DECODE_INT_MEM(VehicleHeadtime);
+			DECODE_INT_MEM(VehicleHeadspace);
+			DECODE_INT_MEM(VehicleDensity);
         }catch(exception e){
             PRT_DECODE_EXCEPTION
         }
@@ -644,11 +673,20 @@ public:
             ENCODE_JSONDATA_MEM(EndQueuePoint);
             ENCODE_INT_MEM(LaneVehicleNumber);
             ENCODE_INT_MEM(VehicleFlow);
+			ENCODE_INT_MEM(CarFlow);
+			ENCODE_INT_MEM(BusFlow);
+			ENCODE_INT_MEM(TruckFlow);
+			ENCODE_INT_MEM(BicycleFlow);
+			ENCODE_INT_MEM(MotorbikeFlow);
+			ENCODE_INT_MEM(LaneDirection);
             ENCODE_INT_MEM(VehicleSpeed);
             ENCODE_INT_MEM(NearActualLength);
             ENCODE_INT_MEM(FarActualLength);
             ENCODE_BOOL_MEM(FarCarExist);
             ENCODE_BOOL_MEM(NearCarExist);
+			ENCODE_INT_MEM(VehicleHeadtime);
+			ENCODE_INT_MEM(VehicleHeadspace);
+			ENCODE_INT_MEM(VehicleDensity);
         }catch(exception e){
             PRT_DECODE_EXCEPTION
         }
@@ -1284,13 +1322,22 @@ class MvdProcessorOutputData:public JsonData{
 public:
     vector <ObjectRect> MvdDetectedObjects;//all rects of car
     int CurrentVehicleNumber; // cars number count on screen now;
+	int CurrentCarNumber;//car num
+	int CurrentBusNumber;//bus num
+	int CurrentTruckNumber;//truck num
     int Visibility;// visiable or not
     int VideoState;// video state
     vector <LaneOutputJsonData> LaneOutputData;// output
     vector <DegreeJsonData> DegreeData; // on  lane points
     int PersonFlow1;
     int PersonFlow2;
+	int	BicycleFlow1;
+	int BicycleFlow2;
+	int MotorbikeFlow1;
+	int MotorbikeFlow2;
     int CurrentPersionCount;
+	int CurrentBicycleCount;//bicycle num
+	int CurrentMotorbikeCount;//motorbike num
     vector <EventRegionObjectOutput> EventObjects;
     int NewEventFlag;
     MvdProcessorOutputData(JsonPacket p):JsonData(p)
@@ -1300,35 +1347,57 @@ public:
     MvdProcessorOutputData()
     {
     }
-    MvdProcessorOutputData(vector <ObjectRect> fs, int cr, int vy, int ve,
-                           vector <LaneOutputJsonData> la,  vector <DegreeJsonData> da,int p1,int p2,int ct,
+    MvdProcessorOutputData(vector <ObjectRect> fs, int vh, int cr, int bs, int tk,int pn, int be, int me,int vy, int ve,
+                           vector <LaneOutputJsonData> la,  vector <DegreeJsonData> da,int p1,int p2,int b1,int b2,int m1,int m2,int ct,
                            vector<VdRect> is_rct,
                            vector<VdRect> rd_rct,vector<VdRect> da_rct,
                            vector<VdRect> np_rct, vector<LinePoint> cpt, vector<VdRect> ao_rct,
                            vector <EventRegionObjectOutput> eo , int new_flag):
         MvdDetectedObjects(fs),
-        CurrentVehicleNumber(cr),
+        CurrentVehicleNumber(vh),
+		CurrentCarNumber(cr),
+        CurrentBusNumber(bs),
+        CurrentTruckNumber(tk),
+		CurrentPersionCount(pn),
+		CurrentBicycleCount(be),
+		CurrentMotorbikeCount(me),
         Visibility(vy),
         VideoState(ve),
         LaneOutputData(la),
         DegreeData(da),
         PersonFlow1(p1),
-        PersonFlow2(p2),  EventObjects(eo), NewEventFlag(new_flag)
+        PersonFlow2(p2),  
+		BicycleFlow1(b1),
+		BicycleFlow2(b2),
+		MotorbikeFlow1(m1),
+		MotorbikeFlow2(m2),
+		EventObjects(eo), NewEventFlag(new_flag)
 
     {
         encode();
     }
-    MvdProcessorOutputData(vector <ObjectRect> fs, int cr, int vy, int ve,
-                           vector <LaneOutputJsonData> la,  vector <DegreeJsonData> da,int p1,int p2,
+    MvdProcessorOutputData(vector <ObjectRect> fs, int vh, int cr, int bs, int tk, int pn, int be, int me, int vy, int ve,
+                           vector <LaneOutputJsonData> la,  vector <DegreeJsonData> da,int p1,int p2,int b1,int b2,int m1,int m2,
                            vector <EventRegionObjectOutput> eo ,int new_flag):
         MvdDetectedObjects(fs),
-        CurrentVehicleNumber(cr),
+        CurrentVehicleNumber(vh),
+		CurrentCarNumber(cr),
+		CurrentBusNumber(bs),
+		CurrentTruckNumber(tk),
+		CurrentPersionCount(pn),
+		CurrentBicycleCount(be),
+		CurrentMotorbikeCount(me),
         Visibility(vy),
         VideoState(ve),
         LaneOutputData(la),
         DegreeData(da),
         PersonFlow1(p1),
-        PersonFlow2(p2),  EventObjects(eo), NewEventFlag(new_flag)
+        PersonFlow2(p2),  
+		BicycleFlow1(b1),
+		BicycleFlow2(b2),
+		MotorbikeFlow1(m1),
+		MotorbikeFlow2(m2),
+		EventObjects(eo), NewEventFlag(new_flag)
 
     {
         encode();
@@ -1338,6 +1407,9 @@ public:
         try{
             DECODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
             DECODE_INT_MEM(CurrentVehicleNumber);
+            DECODE_INT_MEM(CurrentCarNumber);
+            DECODE_INT_MEM(CurrentBusNumber);
+            DECODE_INT_MEM(CurrentTruckNumber);
             DECODE_INT_MEM(Visibility);
             DECODE_INT_MEM(VideoState);
             DECODE_JSONDATA_ARRAY_MEM(LaneOutputData);
@@ -1347,7 +1419,13 @@ public:
             }catch(exception e){}
             DECODE_INT_MEM(PersonFlow1);
             DECODE_INT_MEM(PersonFlow2);
+			DECODE_INT_MEM(BicycleFlow1);
+			DECODE_INT_MEM(BicycleFlow2);
+			DECODE_INT_MEM(MotorbikeFlow1);
+			DECODE_INT_MEM(MotorbikeFlow2);
             DECODE_INT_MEM(CurrentPersionCount);
+	        DECODE_INT_MEM(CurrentBicycleCount);
+			DECODE_INT_MEM(CurrentMotorbikeCount);
 			DECODE_INT_MEM(NewEventFlag);
         }catch(exception e){
             PRT_DECODE_EXCEPTION
@@ -1358,7 +1436,10 @@ public:
         try{
             ENCODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
             ENCODE_INT_MEM(CurrentVehicleNumber);
-            ENCODE_INT_MEM(Visibility);
+            ENCODE_INT_MEM(CurrentCarNumber);
+            ENCODE_INT_MEM(CurrentBusNumber);			
+            ENCODE_INT_MEM(CurrentTruckNumber);			
+			ENCODE_INT_MEM(Visibility);
             ENCODE_INT_MEM(VideoState);
             ENCODE_JSONDATA_ARRAY_MEM(LaneOutputData);
             ENCODE_JSONDATA_ARRAY_MEM(DegreeData);
@@ -1367,7 +1448,13 @@ public:
             }catch(exception e){}
             ENCODE_INT_MEM(PersonFlow1);
             ENCODE_INT_MEM(PersonFlow2);
+			DECODE_INT_MEM(BicycleFlow1);
+			DECODE_INT_MEM(BicycleFlow2);
+			DECODE_INT_MEM(MotorbikeFlow1);
+			DECODE_INT_MEM(MotorbikeFlow2);
             ENCODE_INT_MEM(CurrentPersionCount);
+	        ENCODE_INT_MEM(CurrentBicycleCount);
+	        ENCODE_INT_MEM(CurrentMotorbikeCount);		
 			ENCODE_INT_MEM(NewEventFlag);
         }catch(exception e){
             PRT_DECODE_EXCEPTION
