@@ -667,6 +667,8 @@ class ClientConfig{
 public:
     static bool show_processor_text;
     static bool show_camera_state;
+    static bool show_output;
+    static bool show_input;
 };
 #define SLEEP_HERE     \
 while(true){\

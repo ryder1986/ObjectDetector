@@ -6,8 +6,8 @@ PlayerWidget::PlayerWidget(CameraInputData data,QWidget *parent) : QWidget(paren
 {
     src=new VideoSource(data.Url);
     set_delay(800/40);//  800ms is default delay on ui
-    show_input=true;
-    show_output=true;
+//    show_input=true;
+//    show_output=true;
     delay_frames=0;
 
     camera_data=data;

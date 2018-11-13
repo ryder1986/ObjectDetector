@@ -143,7 +143,7 @@ protected:
             }
             QPainter img_painter(&img);
             current_painter=&img_painter;
-            if(show_input){
+            if(ClientConfig::show_input){
                 // draw input
                 camera_data.draw(bind(&PlayerWidget::draw_line,
                                       this,placeholders::_1,
@@ -158,7 +158,7 @@ protected:
                                  );
             }
             // if(0){
-            if(show_output){
+            if(ClientConfig::show_output){
                 // draw output
                 if(camera_data.data().str().size()>10&&\
                         output_data.data().str().size()>0)//TODO:better way?
@@ -402,22 +402,22 @@ public slots:
     }
 
 
-    void show_input_data(bool show)
-    {
-        if(show){
-            show_input=true;
-        }else{
-            show_input=false;
-        }
-    }
-    void show_output_data(bool show)
-    {
-        if(show){
-            show_output=true;
-        }else{
-            show_output=false;
-        }
-    }
+//    void show_input_data(bool show)
+//    {
+//        if(show){
+//            show_input=true;
+//        }else{
+//            show_input=false;
+//        }
+//    }
+//    void show_output_data(bool show)
+//    {
+//        if(show){
+//            show_output=true;
+//        }else{
+//            show_output=false;
+//        }
+//    }
 
     void show_text_info(bool show)
     {
@@ -462,8 +462,8 @@ private:
     QPainter *current_painter;
     vector< MyAction *> actions;
     QMenu menu;
-    bool show_input;
-    bool show_output;
+//    bool show_input;
+//    bool show_output;
     //bool show_text;
     int delay_frames;
     int data_fps;

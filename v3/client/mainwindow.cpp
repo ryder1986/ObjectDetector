@@ -54,7 +54,7 @@ void MainWindow::on_pushButton_addcam_clicked()
 void MainWindow::on_pushButton_delcam_clicked()
 {
     int del_index=deleting_index;
-  //  int del_index=ui->comboBox_del_index->itemText(deleting_index).toInt();
+    //  int del_index=ui->comboBox_del_index->itemText(deleting_index).toInt();
     if(del_index==0){
         for(int i=0;i<cfg.CameraData.size();i++){
             request_del_cam(cfg.CameraData.size()-i);
@@ -79,7 +79,7 @@ void MainWindow::server_msg(QString msg)
     //ui->plainTextEdit_recive->setPlainText(msg);//show what we got
     string str(msg.toUtf8());
     QString old_msg=ui->textEdit_netbuffer->toPlainText();
-  //  ui->textEdit_netbuffer->setPlainText(msg);
+    //  ui->textEdit_netbuffer->setPlainText(msg);
     ui->textEdit_netbuffer->setPlainText(old_msg.append("------\n").append(msg));
     ReplyPkt event(str);
     switch(event.Operation){
@@ -98,7 +98,7 @@ void MainWindow::server_msg(QString msg)
         ui->comboBox_del_index->clear();
         ui->comboBox_del_index->addItem("all");
         for(int i=0;i<cam_sz;i++){
-          //  ui->comboBox_del_index->addItem(QString::number(i+1));
+            //  ui->comboBox_del_index->addItem(QString::number(i+1));
             ui->comboBox_del_index->addItem(QString::number(i+1).append("(").append(cfg.CameraData[i].Url.data()).append(")"));
 
         }
@@ -172,7 +172,7 @@ void MainWindow::on_pushButton_connect_clicked()
 
 void MainWindow::on_comboBox_play_index_activated(const QString &arg1)
 {
-//    prt(info,"%s selected",arg1.toStdString().data());
+    //    prt(info,"%s selected",arg1.toStdString().data());
 #if 0
     if(arg1=="all"){
         play_all_cam();
@@ -189,16 +189,18 @@ void MainWindow::on_comboBox_del_index_activated(int index)
 
 void MainWindow::on_checkBox_showoutput_clicked(bool checked)
 {
-    for(PlayerWidget *w:players){
-        w->show_output_data(checked);
-    }
+    ClientConfig::show_output=checked;
+    //    for(PlayerWidget *w:players){
+    //        w->show_output_data(checked);
+    //    }
 }
 
 void MainWindow::on_checkBox_showinput_clicked(bool checked)
 {
-    for(PlayerWidget *w:players){
-        w->show_input_data(checked);
-    }
+    ClientConfig::show_input=checked;
+    //    for(PlayerWidget *w:players){
+    //        w->show_input_data(checked);
+    //    }
 }
 
 void MainWindow::on_pushButton_waitms_clicked()

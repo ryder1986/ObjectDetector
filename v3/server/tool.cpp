@@ -7,3 +7,5 @@ LogFile Tool1::log_file1("log_file1.txt");
 //LogFile Tool1::log_file1;
 bool ClientConfig::show_processor_text=true;
 bool ClientConfig::show_camera_state=false;
+bool ClientConfig::show_output=true;
+bool ClientConfig::show_input=true;
