@@ -972,7 +972,10 @@ private:
 
 
 
-
+            if(begin.LaneOutputData.size()<=j)
+                continue;
+            if(end.LaneOutputData.size()<=j)
+                continue;
             LaneOutputJsonData tmp_begin=begin.LaneOutputData[j];
             LaneOutputJsonData tmp_end=end.LaneOutputData[j];
             vihicle_sum=tmp_end.VehicleFlow-tmp_begin.VehicleFlow;
