@@ -1327,9 +1327,9 @@ public:
                 r.FarArea[i].x+=offx;
                 r.FarArea[i].y+=offy;
                 draw_circle(r.FarArea[i],3,PaintableData::Colour::Red,2);
-                draw_circle(r.FarArea[i],1,PaintableData::Colour::Blue,2);
+                draw_circle(r.FarArea[i],1,PaintableData::Colour::Red,2);
                 if(seizing){
-                    draw_text("FA",r.FarArea[i],1,PaintableData::Colour::Green,2);
+                    draw_text("FA",r.FarArea[i],1,PaintableData::Colour::Blue,2);
                 }
             }
             draw_vers_line(r.FarArea,draw_line);
@@ -1341,16 +1341,16 @@ public:
                 draw_circle(r.NearArea[i],1,PaintableData::Colour::Red,2);
                 if(seizing){
                     if(i==0){
-                        draw_text("NA-IN",r.NearArea[i],1,PaintableData::Colour::Green,2);
+                        draw_text("NA-IN",r.NearArea[i],1,PaintableData::Colour::Blue,2);
                     }
                     if(i==3){
-                        draw_text("NA-OUT",r.NearArea[i],1,PaintableData::Colour::Green,2);
+                        draw_text("NA-OUT",r.NearArea[i],1,PaintableData::Colour::Blue,2);
                     }
                     if(i==1){
-                        draw_text("NA",r.NearArea[i],1,PaintableData::Colour::Green,2);
+                        draw_text("NA",r.NearArea[i],1,PaintableData::Colour::Blue,2);
                     }
                     if(i==2){
-                        draw_text("NA",r.NearArea[i],1,PaintableData::Colour::Green,2);
+                        draw_text("NA",r.NearArea[i],1,PaintableData::Colour::Blue,2);
                     }
                 }
             }
@@ -1362,7 +1362,7 @@ public:
                 draw_circle(r.LaneArea[i],3,PaintableData::Colour::Red,2);
                 draw_circle(r.LaneArea[i],1,PaintableData::Colour::Red,2);
                 if(seizing){
-                    draw_text("LA",r.LaneArea[i],1,PaintableData::Colour::Green,2);
+                    draw_text("LA",r.LaneArea[i],1,PaintableData::Colour::Blue,2);
                 }
             }
             draw_vers_line(r.LaneArea,draw_line);
