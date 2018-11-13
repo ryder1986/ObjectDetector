@@ -97,6 +97,7 @@ public:
     }
     void query(char *statement)
     {
+        lock.lock();
 
         //mysql_free_result(resid );
         int mysqlret = mysql_real_query(sql,statement,(unsigned int)strlen(statement));
@@ -111,6 +112,7 @@ public:
             query_flag=true;
             resid = mysql_store_result(sql);
         }
+        lock.unlock();
     }
     ~DatabaseInstance()
     {
@@ -136,6 +138,7 @@ private:
     MYSQL_FIELD *field;
     bool query_flag;
     bool need_connect;
+    mutex lock;
     // MYSQL_ROW row_str_list;
 };
 
@@ -977,8 +980,8 @@ private:
                 tables.push_back(table);
                 continue;
             }
-            ahead_sum=vihicle_sum;
-            rear_sum=0;
+//            ahead_sum=vihicle_sum;
+//            rear_sum=0;
 
             truck_sum=tmp_end.TruckFlow-tmp_begin.TruckFlow;
             bus_sum=tmp_end.BusFlow-tmp_begin.BusFlow;
@@ -997,6 +1000,13 @@ private:
                 desity_sum+=l.VehicleDensity;
                 if(l.NearCarExist){
                     exist++;
+                }
+                if(l.LaneDirection){
+                    ahead_sum=vihicle_sum;
+                    rear_sum=0;
+                }else{
+                    ahead_sum=0;
+                    rear_sum=vihicle_sum;
                 }
             }
 
