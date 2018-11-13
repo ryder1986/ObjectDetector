@@ -164,15 +164,18 @@ class App:public VdData<AppInputData>
         string a_id;
         string avenue;
         string cameraid;
+
         string laneid;
         string vihicle_sum;
         string ahead_sum;
         string rear_sum;
+
         string truck_sum;
         string bus_sum;
         string car_sum;
         string motor_sum;
         string bicycle_sum;
+
         string average_speed;
         string average_time;
         string average_space;
@@ -186,6 +189,27 @@ public:
     ~App();
     void start()
     {
+    }
+    void test_sql()
+    {
+        //  DatabaseInstance &ins= DatabaseInstance::get_instance();
+
+        DatabaseInstance &ins=get_database();
+
+        while(1) {
+
+            ins.query(
+                        "INSERT INTO VS                  ( `RecordID`, `SST`,\
+                        `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `LaneID`, \
+                        `VSum`, `VPSum`, `VNSum`, `VTSum`, `VBSum`, `VCSum`, `VMSum`,  \
+                        `VKSum`, `ASpeed`, `ATime`, `ASpace`, `AVM`, `AOccupy`,`RState`) \
+                    VALUES('999','2018-11-13-09:31:00','5','66','66','66',\
+                           '66','3','3','0','0','0','3','0','0','45','46','36','37','2','1');"
+
+            );
+
+            SLEEP_HERE_MS(1000);
+        }
     }
 private:
     bool process_event(RequestPkt e,ReplyPkt &r);
@@ -302,10 +326,13 @@ private:
         string host="localhost";
         string fn;
         fn.append("/ftphome/pic/");
+        prt(info,"database start");
         if(sql_need_connect){
             ins.connect(host,user,passwd,db);
             sql_need_connect=false;
+            prt(info,"database starting..");
         }
+        prt(info,"database done");
         return ins;
     }
     void get_tis_str(char *buf,char *time, int type)
@@ -603,7 +630,12 @@ private:
             //   prt(info," %s ",id.SelectedProcessor.data());
             if(id.SelectedProcessor==LABEL_PROCESSOR_MVD){
                 MvdProcessorOutputData mvddata(rst);
+                flow_lock.lock();
                 outputs[index-1].push_back(mvddata);
+                if(!mvddata.LaneOutputData.size()){
+                    prt(info,"size 0, %s",mvddata.data().str().data());
+                }
+                flow_lock.unlock();
                 if(mvddata.NewEventFlag)
                     for(EventRegionObjectOutput eo:mvddata.EventObjects){
 
@@ -880,27 +912,110 @@ private:
         #endif
                 ins.query(buf);
     }
-    inline void do_report(vector< MvdProcessorOutputData> & outputs,
-                          vector <vs_table> &tables,string sql_time,int lane_size,
-                          MvdProcessorInputData &input)
+    inline void do_report( MvdProcessorInputData &input,
+                           vector< MvdProcessorOutputData> & outputs,
+                           vector <vs_table> &tables,
+                           string sql_time)
     {
+        vs_table table;
         table.record_id=int_2_string(999);
         table.sql_time=sql_time;
-        table.period=COUNT_SECONDS;
-        table.a_id="test id";
-        table.avenue="test avenue";
-        table.cameraid="test camera id";
+        table.period=int_2_string(COUNT_SECONDS);
+        table.a_id="66";
+        table.avenue="66";
+        table.cameraid="66";
 
 
         int lanesize=input.LaneData.size();
+
+        MvdProcessorOutputData begin=outputs.front();
+        MvdProcessorOutputData end=outputs.back();
+
+        int vihicle_sum=0;
+        int ahead_sum=0;
+        int rear_sum=0;
+
+        int truck_sum=0;
+        int bus_sum=0;
+        int car_sum=0;
+        int motor_sum=0;
+        int bicycle_sum=0;
+
+
+        int speed_sum=0;
+        int time_sum=0;
+        int space_sum=0;
+        int desity_sum=0;
+        int occupy_sum=0;
+
         for(int j=0;j<lanesize;j++){
-            vs_table table;
-            table.laneid="test lane id";
+
+            table.laneid="66";
+
+            table.vihicle_sum=int_2_string(0);
+            table.ahead_sum=int_2_string(0);;
+            table.rear_sum=int_2_string(0);;
+            table.truck_sum=int_2_string(0);;
+            table.bus_sum=int_2_string(0);;
+            table.car_sum=int_2_string(0);;
+            table.motor_sum=int_2_string(0);;
+            table.bicycle_sum=int_2_string(0);;
+            table.average_speed=int_2_string(0);;
+            table.average_time=int_2_string(0);;
+            table.average_space=int_2_string(0);;
+            table.average_desity=int_2_string(0);;
+            table.average_occupy=int_2_string(0);;
+            table.state=int_2_string(0);;
+
+
+
+
+            LaneOutputJsonData tmp_begin=begin.LaneOutputData[j];
+            LaneOutputJsonData tmp_end=end.LaneOutputData[j];
+            vihicle_sum=tmp_end.VehicleFlow-tmp_begin.VehicleFlow;
+            if(!vihicle_sum){
+                tables.push_back(table);
+                continue;
+            }
+            ahead_sum=vihicle_sum;
+            rear_sum=0;
+
+            truck_sum=tmp_end.TruckFlow-tmp_begin.TruckFlow;
+            bus_sum=tmp_end.BusFlow-tmp_begin.BusFlow;
+            car_sum=tmp_end.CarFlow-tmp_begin.CarFlow;
+
+            motor_sum=tmp_end.MotorbikeFlow-tmp_begin.MotorbikeFlow;
+            bicycle_sum=tmp_end.BicycleFlow-tmp_begin.BicycleFlow;
+
+            int exist=0;
             for(int i=0;i<outputs.size();i++){
                 MvdProcessorOutputData o= outputs[i];
                 LaneOutputJsonData l=o.LaneOutputData[j];
-
+                speed_sum+=l.VehicleSpeed;
+                time_sum+=l.VehicleHeadtime;
+                space_sum+=l.VehicleDensity;
+                desity_sum+=l.VehicleDensity;
+                if(l.NearCarExist){
+                    exist++;
+                }
             }
+
+            table.vihicle_sum=int_2_string(vihicle_sum);
+            table.ahead_sum=int_2_string(ahead_sum);
+            table.rear_sum=int_2_string(rear_sum);
+            table.truck_sum=int_2_string(truck_sum);
+            table.bus_sum=int_2_string(bus_sum);
+            table.car_sum=int_2_string(car_sum);
+            table.motor_sum=int_2_string(motor_sum);
+            table.bicycle_sum=int_2_string(bicycle_sum);
+
+            table.average_speed=int_2_string(speed_sum/outputs.size());
+            table.average_time=int_2_string(time_sum/outputs.size());
+            table.average_space=int_2_string(space_sum/outputs.size());
+
+            table.average_desity=int_2_string(desity_sum/outputs.size());
+            table.average_occupy=int_2_string(exist*100/outputs.size());
+            table.state=int_2_string(1);
 
             tables.push_back(table);
         }
@@ -923,7 +1038,7 @@ private:
         while(!quit_count){
 
             //if(count_time--==1){
-            if(((count_time--%COUNT_SECONDS<2)&&((get_time_second()%COUNT_SECONDS)==0))){
+            if(((count_time--<3)&&((get_time_second()%COUNT_SECONDS)==0))){
                 string sql_time=get_sql_time();
                 prt(info,"time up , liuliang  start---------------------------->");
                 // lock.lock();
@@ -945,13 +1060,20 @@ private:
                         continue;
                     }
 
+                    flow_lock.lock();
                     vector< MvdProcessorOutputData>  &cam_out=outputs[loop_cams];
                     prt(info,"liuliang :framesize %d",cam_out.size());
+                    flow_lock.unlock();
                     if(cam_out.size()<1)
                         continue;
                     vector <vs_table> tables;
                     MvdProcessorInputData mvddata(id.ProcessorData);
-                    do_report(cam_out,tables,sql_time,mvddata);
+                    flow_lock.lock();
+                    do_report(mvddata,cam_out,tables,sql_time);
+                    flow_lock.unlock();
+
+                    prt(info,"liuliang :table %d",tables.size());
+
                     for(vs_table table:tables){
                         database_insert_vs1(table);
                     }
@@ -1028,14 +1150,15 @@ private:
 
 
                 }//loop cams
+                flow_lock.lock();
                 for(int i=0;i<MAX_CAM_NUM;i++)
                     outputs[i].clear();
-
-                count_time=COUNT_SECONDS;
+                flow_lock.unlock();
+                count_time=COUNT_SECONDS*2;
                 prt(info," stop cal ---------------------------->");
             }
 
-            this_thread::sleep_for(chrono::microseconds(1000000));
+            this_thread::sleep_for(chrono::microseconds(500000));
         }
     }
 
@@ -1144,23 +1267,14 @@ private:
         string vs_VCSum=table.car_sum;
         string vs_VMSum=table.motor_sum;
         string vs_VKSum=table.bicycle_sum;
-        //        if(car_count[lane_index]){
-        //            prt(info,"car num %d, speed total %d",car_count[lane_index],speed_count[lane_index]);
-        //            int average_speed=speed_count[lane_index]/car_count[lane_index];
-        //            memset(buf_tmp,0,100);
-        //            sprintf(buf_tmp,"%d",average_speed);
-        //            //  tmp2<<average_speed;
-        //        }else{
-        //            memset(buf_tmp,0,100);
-        //            sprintf(buf_tmp,"%d",0);
-        //        }
         string vs_ASpeed=table.average_speed;
         string vs_ATime=table.average_time;
         string vs_ASpace=table.average_space;
         string vs_AVM=table.average_desity;
         string vs_AOccupy=table.average_occupy;
         string vs_RState=table.state;
-        DatabaseInstance &ins=DatabaseInstance::get_instance();
+        // DatabaseInstance &ins=DatabaseInstance::get_instance();
+        DatabaseInstance &ins=get_database();
         stringstream stream;
         stream<< "INSERT INTO VS \
                  ( `RecordID`, `SST`, `SP`, `AnalyceID`, `SAvenue`, `CameraID`, `LaneID`,\
@@ -1226,6 +1340,8 @@ private:
     vector <MvdProcessorOutputData> outputs[MAX_CAM_NUM];//support MAX_CAM_NUM cameras
     mutex lock;
     mutex buffer_lock;
+
+    mutex flow_lock;
 };
 
 

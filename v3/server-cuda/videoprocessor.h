@@ -1405,7 +1405,7 @@ public:
     void decode()
     {
         try{
-            DECODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
+
             DECODE_INT_MEM(CurrentVehicleNumber);
             DECODE_INT_MEM(CurrentCarNumber);
             DECODE_INT_MEM(CurrentBusNumber);
@@ -1414,9 +1414,7 @@ public:
             DECODE_INT_MEM(VideoState);
             DECODE_JSONDATA_ARRAY_MEM(LaneOutputData);
             DECODE_JSONDATA_ARRAY_MEM(DegreeData);
-            try{
-                DECODE_JSONDATA_ARRAY_MEM(EventObjects);
-            }catch(exception e){}
+
             DECODE_INT_MEM(PersonFlow1);
             DECODE_INT_MEM(PersonFlow2);
 			DECODE_INT_MEM(BicycleFlow1);
@@ -1427,6 +1425,10 @@ public:
 	        DECODE_INT_MEM(CurrentBicycleCount);
 			DECODE_INT_MEM(CurrentMotorbikeCount);
 			DECODE_INT_MEM(NewEventFlag);
+            try{
+                DECODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
+                DECODE_JSONDATA_ARRAY_MEM(EventObjects);
+            }catch(exception e){}
         }catch(exception e){
             PRT_DECODE_EXCEPTION
         }
@@ -1434,7 +1436,7 @@ public:
     void encode()
     {
         try{
-            ENCODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
+
             ENCODE_INT_MEM(CurrentVehicleNumber);
             ENCODE_INT_MEM(CurrentCarNumber);
             ENCODE_INT_MEM(CurrentBusNumber);			
@@ -1444,14 +1446,15 @@ public:
             ENCODE_JSONDATA_ARRAY_MEM(LaneOutputData);
             ENCODE_JSONDATA_ARRAY_MEM(DegreeData);
             try{
+                ENCODE_JSONDATA_ARRAY_MEM(MvdDetectedObjects);
                 ENCODE_JSONDATA_ARRAY_MEM(EventObjects);
             }catch(exception e){}
             ENCODE_INT_MEM(PersonFlow1);
             ENCODE_INT_MEM(PersonFlow2);
-			DECODE_INT_MEM(BicycleFlow1);
-			DECODE_INT_MEM(BicycleFlow2);
-			DECODE_INT_MEM(MotorbikeFlow1);
-			DECODE_INT_MEM(MotorbikeFlow2);
+            ENCODE_INT_MEM(BicycleFlow1);
+            ENCODE_INT_MEM(BicycleFlow2);
+            ENCODE_INT_MEM(MotorbikeFlow1);
+            ENCODE_INT_MEM(MotorbikeFlow2);
             ENCODE_INT_MEM(CurrentPersionCount);
 	        ENCODE_INT_MEM(CurrentBicycleCount);
 	        ENCODE_INT_MEM(CurrentMotorbikeCount);		

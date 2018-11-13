@@ -7,9 +7,12 @@ App::App():watch_dog(bind(&App::check_point,this))
 App::App(ConfigManager *p_config_manager):str_stream(""),watch_dog(bind(&App::check_point,this)),
     VdData(DeviceConfigData(p_config_manager->get_config()).DeviceConfig.data()),lservice(),p_cm(p_config_manager),udp_fd(0)
 {
+    sql_need_connect=true;
+   // test_sql();
+   // PAUSE_HERE_FOREVER;
     stream_cmd=NULL;
     restart_all();
-    sql_need_connect=true;
+
     p_count_thread=new thread(bind(&App::flow_thread,this));
     static Tcpserver server_cmd(stream_cmd,
                                 12345,

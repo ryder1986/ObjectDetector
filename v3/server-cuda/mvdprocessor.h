@@ -859,6 +859,9 @@ public:
         int VideoState = p_cfg->p_outbuf->FVDoutbuf.VideoException;
 
         vector <LaneOutputJsonData> LaneOutputData;
+        if(!p_cfg->p_outbuf->FVDoutbuf.uLaneNum){
+            prt(info,"get error num %d",p_cfg->p_outbuf->FVDoutbuf.uLaneNum);
+        }
         for( i = 0;  i <p_cfg->p_outbuf->FVDoutbuf.uLaneNum; i++)
         {
             int laneNo, queLen, vehiNum, flow, speed, Farcarexist, Nearcarexist,carflow,busflow,truckflow,bicycleflow,motorbikeflow,lanedirection;
@@ -1060,6 +1063,10 @@ public:
 		prt(info,"NonMotorAllow Num =%d",p_cfg->p_outbuf->INCIDENToutbuf.uNonMotorAllowNum);
 		//此帧有无新事件标记
 		int new_flag = p_cfg->p_outbuf->INCIDENToutbuf.uNewIncidentFlag;
+        if(new_flag==1){
+
+            prt(info,"new event");
+        }
         MvdProcessorOutputData out(MvdDetectedObjects,
                                    CurrentVehicleNumber,
 								   CurrentCarNumber,
