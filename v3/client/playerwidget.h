@@ -179,7 +179,7 @@ protected:
             }
 
             if(ClientConfig::show_processor_text){
-                draw_text(QString("data fps:").append(QString::number(data_fps_old)).toStdString(),VdPoint(200,340),100,PaintableData::Red,30);
+                draw_text(QString("data fps:").append(QString::number(data_fps_old)).toStdString(),VdPoint(200,340),100,PaintableData::Green,300);
 
             }
 

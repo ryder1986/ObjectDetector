@@ -26,6 +26,8 @@ void Camera::run_process()
             //   int tmp=0;
             for(DetectRegion *r:drs){
                 // prt(info,"region siz %d,now (%d) ",drs.size(),++tmp);
+
+                imwrite("test1.png",frame);
                 DetectRegionOutputData ret=r->work(frame);
                 pkts.push_back(ret);
             }

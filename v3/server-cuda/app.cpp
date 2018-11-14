@@ -75,9 +75,12 @@ void App::process_camera_data(Camera *camera, CameraOutputData data)
     //lock.lock();
 
     Timer2 t2;
-    t2.AsyncWait(0,bind(&App::handle_result,this,placeholders::_1,placeholders::_2,placeholders::_3),data,idx+1,cms[idx]->screenshot);
+    Mat frame;
+    cms[idx]->screenshot.copyTo(frame);
+    store_frame(frame,idx+1);
+    t2.AsyncWait(0,bind(&App::handle_result,this,placeholders::_1,placeholders::_2,placeholders::_3),data,idx+1,frame);
  //   t2.AsyncWait(0,bind(&App::insert_database,this,placeholders::_1,placeholders::_2,placeholders::_3),data,idx+1,cms[idx]->screenshot);
-    //insert_database(data,idx+1,cms[idx]->screenshot);
+  //  handle_result(data,idx+1,frame);
     if(udp_fd<=0)
         udp_fd=Socket::UdpCreateSocket(5000);
    // lock.unlock();
@@ -97,7 +100,7 @@ void App::process_camera_data(Camera *camera, CameraOutputData data)
 
 bool App::process_event(RequestPkt e, ReplyPkt &r)
 {
-    lock.lock();
+   // lock.lock();
     bool ret=false;
     prt(info,"handle cmd type %d",e.Operation);
     switch(e.Operation){
@@ -203,6 +206,6 @@ bool App::process_event(RequestPkt e, ReplyPkt &r)
         prt(info,"unknow cmd %d",e.Operation);
         break;
     }
-    lock.unlock();
+  //  lock.unlock();
     return ret;
 }
