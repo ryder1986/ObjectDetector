@@ -539,6 +539,11 @@ public:
         }
         return false;
     }
+    static inline string remove_prefix(string src)
+    {
+        int n=src.find_first_of("{");
+        return src=src.substr(n,src.size()-n);
+    }
 private:
     static inline bool try_get_obj_buf(string src,string &dst)
     {

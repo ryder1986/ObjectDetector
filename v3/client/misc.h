@@ -30,7 +30,7 @@ public slots:
                 ip_list.append(server_ip);
                 emit resultReady(server_ip);
             }else{
-                //      prt(info,"searching");
+                //      prt(info,"searching);
             }
             QThread::msleep(10);
         }
