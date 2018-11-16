@@ -7,7 +7,10 @@
 #include "misc.h"
 #include "playerwidget.h"
 #include "app_data.h"
-
+//#ifdef _MSC_BUILD
+//#pragma execution_character_set("utf-8")
+//#endif
+#pragma execution_character_set("utf-8")
 #ifdef ACTIVEX
 #include <ActiveQt>
 
@@ -106,13 +109,15 @@ public:
         play_mode=ALL_CAM;
         start_config();
     }
+    void check_point();
+
     void handle_output()
     {
         output_lock.lock();
         if(output_list.size()){
 
             QByteArray datagram=output_list.first();
-             output_lock.unlock();
+            output_lock.unlock();
             QString str(datagram.data());
             JsonPacket pkt(str.toStdString());
             AppOutputData rst( pkt  );
@@ -147,14 +152,14 @@ public:
                 prt(info,"server output index %d,out of range(1- %d), make sure you\
                     loaded the server cfg & camera size >0 ",rst.CameraIndex,cfg.CameraData.size());
             }
-             output_lock.lock();
+            output_lock.lock();
             output_list.removeAt(0);
-             output_lock.unlock();
+            output_lock.unlock();
         }else{
 
-             output_lock.unlock();
+            output_lock.unlock();
         }
-     //   output_lock.unlock();
+        //   output_lock.unlock();
     }
 
 private slots:
@@ -301,7 +306,8 @@ private slots:
         prt(info,"req from camera %d",idx+1);
         clt.send(get_request_pkt(AppInputData::MODIFY_CAMERA,idx,req.data()).data().str());
     }
-
+    void disable_output_show();
+    void enable_output_show();
     void cameras_show_mode(PlayerWidget *wgt);
     void on_pushButton_play_clicked();
 
@@ -319,13 +325,15 @@ private slots:
 
     void on_checkBox_showinput_clicked(bool checked);
 
-    void on_pushButton_waitms_clicked();
+
 
     void on_checkBox_show_text_clicked(bool checked);
 
     void on_checkBox_show_info_clicked(bool checked);
 
     void on_comboBox_play_index_activated(int index);
+
+    void on_lineEdit_wait_ms_returnPressed();
 
 private:
     Ui::MainWindow *ui;
@@ -341,6 +349,7 @@ private:
     int play_index;
     int deleting_index;
     Timer1 tmr1;
+    Timer1 tmr_watchdog;
     bool fullscreen_mode;
 };
 

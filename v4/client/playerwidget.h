@@ -2,6 +2,7 @@
 #define PLAYERWIDGET_H
 
 #include <QWidget>
+#include <QOpenGLWidget>
 #include "videosource.h"
 #include <qmutex.h>
 #include <QPainter>
@@ -79,7 +80,7 @@ public:
 
 
 };
-class PlayerWidget : public QWidget
+class PlayerWidget : public QOpenGLWidget
 {
     Q_OBJECT
 public:
@@ -125,7 +126,7 @@ public:
         }else{
             throw exception();
         }
-      //  return img;
+        //  return img;
     }
     void set_delay(int frames)
     {
@@ -144,10 +145,10 @@ protected:
             QPainter this_painter(this);
             if(!get_img()){
                 //img=
-                        get_test_img();
+                get_test_img();
 
-                         lock.unlock();
-                         return;
+                lock.unlock();
+                return;
             }
             QPainter img_painter(&img);
             current_painter=&img_painter;
@@ -180,7 +181,7 @@ protected:
                 }else{
 
                 }
-                  output_lock.unlock();
+                output_lock.unlock();
 
 
                 if(ClientConfig::show_output&&outflag)
@@ -203,8 +204,8 @@ protected:
             }
 
             // lock.lock();
-            if(ClientConfig::show_processor_text){
-                draw_text(QString("data fps:").append(QString::number(data_fps_old)).toStdString(),VdPoint(200,340),100,PaintableData::Green,300);
+            if(ClientConfig::show_camera_state){
+                draw_text(QString("data fps:").append(QString::number(data_fps_old)).toStdString(),VdPoint(200,340),100,PaintableData::Yellow,10);
 
             }
 
@@ -223,26 +224,28 @@ protected:
         }
 
         lock.unlock();
-paint_lock.lock();
 
-        this->
+        //  this_thread::sleep_for(chrono::milliseconds(100));
+        //paint_lock.lock();
 
-//        if(ClientConfig::show_output&&outflag)
-//            output_data_tmp.draw(
-//                        camera_data,
-//                        bind(&PlayerWidget::draw_line,
-//                             this,placeholders::_1,
-//                             placeholders::_2,placeholders::_3,placeholders::_4),
-//                        bind(&PlayerWidget::draw_circle,
-//                             this,placeholders::_1,
-//                             placeholders::_2,placeholders::_3,placeholders::_4),
-//                        bind(&PlayerWidget::draw_text,
-//                             this,placeholders::_1,
-//                             placeholders::_2,placeholders::_3,placeholders::_4,
-//                             placeholders::_5)
+        //   this_thread::sleep_for(chrono::milliseconds(100));
 
-//                        );
-        paint_lock.unlock();
+        //        if(ClientConfig::show_output&&outflag)
+        //            output_data_tmp.draw(
+        //                        camera_data,
+        //                        bind(&PlayerWidget::draw_line,
+        //                             this,placeholders::_1,
+        //                             placeholders::_2,placeholders::_3,placeholders::_4),
+        //                        bind(&PlayerWidget::draw_circle,
+        //                             this,placeholders::_1,
+        //                             placeholders::_2,placeholders::_3,placeholders::_4),
+        //                        bind(&PlayerWidget::draw_text,
+        //                             this,placeholders::_1,
+        //                             placeholders::_2,placeholders::_3,placeholders::_4,
+        //                             placeholders::_5)
+
+        //                        );
+        //       paint_lock.unlock();
 #endif
     }
     inline void draw_line(VdPoint s,VdPoint e,int colour,int size)
@@ -257,6 +260,9 @@ paint_lock.lock();
             break;
         case PaintableData::Colour::Blue:
             current_painter->setPen(QPen(QBrush(QColor(0,100,255)),size));
+            break;
+        case PaintableData::Colour::Yellow:
+            current_painter->setPen(QPen(QBrush(QColor(255,255,100)),size));
             break;
         default:
             break;
@@ -279,6 +285,9 @@ paint_lock.lock();
         case PaintableData::Colour::Blue:
             current_painter->setPen(QPen(QBrush(QColor(0,100,255)),size));
             break;
+        case PaintableData::Colour::Yellow:
+            current_painter->setPen(QPen(QBrush(QColor(255,255,100)),size));
+            break;
         default:
             break;
         }
@@ -300,9 +309,20 @@ paint_lock.lock();
         case PaintableData::Colour::Blue:
             current_painter->setPen(QPen(QBrush(QColor(0,100,255)),size));
             break;
+        case PaintableData::Colour::Yellow:
+            current_painter->setPen(QPen(QBrush(QColor(255,255,100)),size));
+            break;
         default:
             break;
         }
+
+
+        QFont font;
+        font.setPointSize(current_painter->window().height()/30);
+        font.setFamily("Microsoft YaHei");
+        font.setLetterSpacing(QFont::AbsoluteSpacing,0);
+        current_painter->setFont(font);
+
 
         QPen pen_ori=current_painter->pen();
         current_painter->drawText(center.x,center.y,QString(text.data()));
@@ -502,7 +522,7 @@ private:
     QMutex lock;
     QMutex output_lock;
     QMutex paint_lock;
-     QImage img;
+    QImage img;
     int timestamp;
     QTimer *tick_timer;
     QTimer check_timer;
