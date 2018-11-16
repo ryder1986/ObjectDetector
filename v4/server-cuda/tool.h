@@ -676,11 +676,9 @@ inline  char *get_sql_time()
     tt=time(NULL);
     tm*  lt=localtime(&tt);
     if (strftime(buf2,100, fmt, lt) != NULL) {
-        prt(info,"ok");
+        //prt(info,"ok");
     }else{
         prt(info,"err");
-
-
     }
     return buf2;
 }

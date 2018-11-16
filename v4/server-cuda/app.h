@@ -406,7 +406,7 @@ private:
     void insert_picture(Mat frame,vector <VdPoint> outline,int type,vector <VdPoint> region,string pic_path)
     {
         string str;
-        prt(info,"inserting pic1");
+       // prt(info,"inserting pic1");
         switch(type){
         case EventRegion::OVER_SPEED:
             str.append("OVER_SPEED");
@@ -435,7 +435,7 @@ private:
 
         }
         // return "1";
-        prt(info,"inserting pic2");
+       // prt(info,"inserting pic2");
         putText(frame, str, Point(100,130),CV_FONT_HERSHEY_SIMPLEX,1,Scalar(0,255,255),3,8);
         VdRect rct= vers_2_rect(region);
         VdPoint offset(rct.x,rct.y);
@@ -460,9 +460,9 @@ private:
         //        string passwd="root";
         //        string db="AIPD";
         //        string host="localhost";
-        prt(info,"inserting pic3");
+       // prt(info,"inserting pic3");
         imwrite(pic_path,frame);
-        prt(info,"inserting pic4");
+       // prt(info,"inserting pic4");
     }
 
     int insert_video(int cam_index,string path)
@@ -471,7 +471,7 @@ private:
         {
             return 0;
         }
-        prt(info,"inserting video start");
+        //prt(info,"inserting video start");
         Mat fst=buffer_frames[cam_index-1].front();
         //  cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('X', 'V', 'I', 'D'), 15,  cv::Size(fst.cols, fst.rows));
         //   cv::VideoWriter recVid(path, cv:: VideoWriter::fourcc('M', 'J', 'P', 'G'), 15,  cv::Size(fst.cols, fst.rows));
@@ -484,7 +484,7 @@ private:
             prt(info,"err in open video file");
             return -1;
         }
-        prt(info,"start insert");
+        //prt(info,"start insert");
         vector <Mat> mts;
 
         for(Mat mt:buffer_frames[cam_index-1]){
@@ -494,13 +494,13 @@ private:
         }
 
         for(Mat mt:mts){
-            prt(info,"frame size ( %d %d )",mt.cols,mt.rows);
+            //prt(info,"frame size ( %d %d )",mt.cols,mt.rows);
             recVid<<mt;
-            prt(info,"frame write done");
+            //prt(info,"frame write done");
         }
         recVid.release();
 
-        prt(info,"inserting video done");
+        //prt(info,"inserting video done");
         return 1;
     }
     void get_names(string &pic_name,string &video_name)
@@ -596,9 +596,9 @@ private:
         }
        // store_frame(frame,index);
         //Timer2 t2;t2.AsyncWait(0,bind(&App::store_frame,this,placeholders::_1),frame);
-        prt(info,"handle camera %d",index);
+       // prt(info,"handle camera %d",index);
         CameraInputData input=cms[index-1]->get_data();
-        prt(info,"handle camera %d",index);
+        //prt(info,"handle camera %d",index);
         for(int i=0;i<data.DetectionResult.size();i++){
             DetectRegionOutputData d=data.DetectionResult[i];
             DetectRegionInputData  id= input.DetectRegion[i];
@@ -606,19 +606,19 @@ private:
             //   prt(info," %s ",id.SelectedProcessor.data());
             if(id.SelectedProcessor==LABEL_PROCESSOR_MVD){
                 MvdProcessorOutputData mvddata(rst);
-                prt(info,"handle camera %d",index);
+              //  prt(info,"handle camera %d",index);
                 flow_lock.lock();
                 outputs[index-1].push_back(mvddata);
                 if(!mvddata.LaneOutputData.size()){
                     prt(info,"size 0, %s",mvddata.data().str().data());
                 }
                 flow_lock.unlock();
-                prt(info,"handle camera %d",index);
+               // prt(info,"handle camera %d",index);
                 if(mvddata.NewEventFlag)
                     for(EventRegionObjectOutput eo:mvddata.EventObjects){
-                        prt(info,"handle camera %d",index);
+                      //  prt(info,"handle camera %d",index);
                         if(eo.EventID){
-                            prt(info," inserting event %d begin ",eo.Type);
+                         //   prt(info," inserting event %d begin ",eo.Type);
                             string picname;
                             string videoname;
                             string picpath("/ftphome/pic/");
@@ -629,14 +629,14 @@ private:
                             // Timer2 t2;
                             Mat  frame_tmp;
                             frame.copyTo(frame_tmp);
-                            prt(info,"inserting video");
+                          //  prt(info,"inserting video");
                             // t2.AsyncWait(0,bind(&App::insert_video,this,placeholders::_1,placeholders::_2),index,videopath);
                             insert_video(index,videopath);
-                            prt(info,"inserting pic");
+                          //  prt(info,"inserting pic");
                             insert_picture(frame_tmp,eo.Vers,eo.Type,id.ExpectedAreaVers,picpath);
-                            prt(info,"inserting tis");
+                          //  prt(info,"inserting tis");
                             database_insert_tis(get_sql_time(),eo.Type,picpath.data(),videopath.data());
-                            prt(info,"inserting event done");
+                          //  prt(info,"inserting event done");
 
                         }
                     }
