@@ -401,15 +401,15 @@ private:
     string str_data;
 };
 
-class JsonData{
+class JsonObject{
 protected:
     JsonPacket config;
 public:
-    JsonData(JsonPacket pkt)
+    JsonObject(JsonPacket pkt)
     {
         config=pkt;
     }
-    JsonData()
+    JsonObject()
     {
     }
     virtual void encode()=0;
