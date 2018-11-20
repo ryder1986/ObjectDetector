@@ -853,10 +853,12 @@ public:
             DECODE_JSONDATA_MEM(BaseLine);
             DECODE_INT_MEM(NearPointDistance);
             DECODE_INT_MEM(FarPointDistance);
-            DECODE_JSONDATA_ARRAY_MEM(LaneData);
+            try{DECODE_JSONDATA_ARRAY_MEM(LaneData);
+            }catch(exception e){}
             DECODE_JSONDATA_ARRAY_MEM(DetectLine);
             try{
                 DECODE_JSONDATA_ARRAY_MEM(Events);
+
             }catch(exception e){
                 PRT_DECODE_EXCEPTION
             }
@@ -871,9 +873,14 @@ public:
             ENCODE_JSONDATA_MEM(BaseLine);
             ENCODE_INT_MEM(NearPointDistance);
             ENCODE_INT_MEM(FarPointDistance);
-            ENCODE_JSONDATA_ARRAY_MEM(LaneData);
+            try{
+                ENCODE_JSONDATA_ARRAY_MEM(LaneData);
+            }catch(exception e){}
+
             ENCODE_JSONDATA_ARRAY_MEM(DetectLine);
-            ENCODE_JSONDATA_ARRAY_MEM(Events);
+            try{
+                ENCODE_JSONDATA_ARRAY_MEM(Events);
+            }catch(exception e){}
         }catch(exception e){
             PRT_DECODE_EXCEPTION
         }
