@@ -24,3 +24,7 @@ win32{
 
 DISTFILES += \
     res/config.json
+
+
+
+include(common.pri)

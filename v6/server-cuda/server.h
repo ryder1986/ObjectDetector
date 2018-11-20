@@ -17,7 +17,9 @@ public:
         int ul = 0;
         ioctl(fd, FIONBIO, &ul);
         prt(info,"handle new connection: %s ",ip.data());
-        auto func_recv=bind(&Session::recv,this);
+       // auto func_recv=bind(&Session::recv,this);
+        auto func_recv=bind(&Session::recv_json,this);
+
 
         trd=new thread([func_recv](){func_recv();});
     }
@@ -57,6 +59,53 @@ public:
                 cout<<"socket maybe closed,retry read after 1sec"  <<endl;
                 this_thread::sleep_for(chrono::seconds(1));
             }
+        }
+        end_this(this);
+        return 0;
+    }
+
+
+    string str_stream;
+    int recv_json()
+    {
+        while(!quit){
+            memset(buf,0,BUF_SIZE);
+            int ret=Socket::RecvDataByTcp1(skt,buf,BUF_SIZE);
+            if(ret){
+                prt(info,"read %d bytes",ret);
+
+
+
+                string valid_buf;
+                valid_buf.clear();
+                str_stream.append(string(buf,ret));
+                if(JsonStr::get_valid_buf(str_stream,valid_buf)) {//Get valid json object, TODO:we only check {} matches, we should check json grammar
+                    prt(info,"recive object--> %s(%d bytes left)",valid_buf.data(),str_stream.size());
+                    try{
+                        string json_buf=JsonStr::remove_prefix(valid_buf);
+//
+                        process_data(this,(char*)json_buf.data(),json_buf.size());
+
+                       // RequestPkt event(json_buf);
+//                        ReplyPkt ret_pkt;
+//                        client_tmp_ip=clt->ip();
+//                        process_ret=process_event(event,ret_pkt);
+//                        ret_str=ret_pkt.data().str();
+//                        clt->send(ret_str.data(),ret_str.length());
+                    }catch(exception e){
+                        prt(info,"recive error json ");
+                    }
+                }
+            }else{
+                prt(info,"read socket error");
+                break;
+                cout<<"socket maybe closed,retry read after 1sec"  <<endl;
+                this_thread::sleep_for(chrono::seconds(1));
+            }
+
+
+
+
         }
         end_this(this);
         return 0;

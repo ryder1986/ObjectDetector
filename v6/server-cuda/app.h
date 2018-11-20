@@ -214,6 +214,20 @@ public:
             SLEEP_HERE_MS(1000);
         }
     }
+    void handle_json_cmd(Session *src, char *data, int len)
+    {
+         string ret_str;
+             bool process_ret;
+        prt(info,"json cmd %s",data);
+        // RequestPkt event(json_buf);
+                        ReplyPkt ret_pkt;
+                        client_tmp_ip=src->ip();
+
+                                 RequestPkt event(string(data,len));
+                        process_ret=process_event(event,ret_pkt);
+                        ret_str=ret_pkt.data().str();
+                        src->send(ret_str.data(),ret_str.length());
+    }
 private:
     bool process_event(RequestPkt e,ReplyPkt &r);
     void process_client_cmd(Session *clt,char *data,int len);

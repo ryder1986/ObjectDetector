@@ -17,7 +17,7 @@ App::App(ConfigManager *p_config_manager):str_stream(""),watch_dog(bind(&App::ch
     p_count_thread=new thread(bind(&App::flow_thread,this));
     static Tcpserver server_cmd(stream_cmd,
                                 12345,
-                                bind(&App::process_client_cmd,
+                                bind(&App::handle_json_cmd,
                                      this,placeholders::_1,
                                      placeholders::_2,
                                      placeholders::_3
