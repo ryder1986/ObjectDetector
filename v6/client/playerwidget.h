@@ -316,14 +316,15 @@ protected:
             break;
         }
 
-
+#if 0
         QFont font;
-        font.setPointSize(current_painter->window().height()/30);
+       // font.setPointSize(current_painter->window().height()/30);
+        font.setPointSize(current_painter->window().height()/90);
         font.setFamily("Microsoft YaHei");
         font.setLetterSpacing(QFont::AbsoluteSpacing,0);
         current_painter->setFont(font);
 
-
+#endif
         QPen pen_ori=current_painter->pen();
         current_painter->drawText(center.x,center.y,QString(text.data()));
         current_painter->setPen(pen_ori);

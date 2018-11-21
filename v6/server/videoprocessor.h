@@ -1709,12 +1709,12 @@ public:
 #endif
         memset(buf,0,100);sprintf(buf,"当前车辆总数 %d", CurrentVehicleNumber);
         if(ClientConfig::show_processor_text){
-            draw_text(buf,VdPoint(x,y),1,PaintableData::Colour::Green,4);
+            draw_text(buf,VdPoint(x,y),1,PaintableData::Colour::Red,4);
         }
         y+=10;
         memset(buf,0,100);sprintf(buf,"当前事件 %d",EventObjects.size());
         if(ClientConfig::show_processor_text){
-            draw_text(buf,VdPoint(x,y),1,PaintableData::Colour::Green,4);
+            draw_text(buf,VdPoint(x,y),1,PaintableData::Colour::Red,4);
         }
         y+=10;
 
@@ -1725,7 +1725,7 @@ public:
             memset(buf,0,100);sprintf(buf,"车道%d:%d",cnt+1,ld.VehicleFlow);
             if(ClientConfig::show_processor_text){
 
-                draw_text(buf,VdPoint(x,y),1,PaintableData::Colour::Green,4);
+                draw_text(buf,VdPoint(x,y),1,PaintableData::Colour::Red,4);
             }
             x+=80;
             y+10;
