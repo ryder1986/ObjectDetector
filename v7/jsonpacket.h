@@ -64,6 +64,7 @@ public:
         }
         val=v;
     }
+
     template <typename T>
     void set(string name,T value)
     {
@@ -75,6 +76,7 @@ public:
         else
             val[name]=value;
     }
+
     void set(string name,JsonPacket p)
     {
         if(!name_exist(name,"set")){
@@ -97,6 +99,7 @@ public:
                 val[name].append(p.value());
         }
     }
+
     JsonPacket get(string name)
     {
         if(name_exist(name,"get")){
@@ -107,6 +110,7 @@ public:
             return JsonPacket();
         }
     }
+
     string get_string(string name)
     {
         if(name_exist(name,"get")){
@@ -116,6 +120,7 @@ public:
         else
             return string();
     }
+
     int get_int(string name)
     {
         if(name_exist(name,"get")){
@@ -125,6 +130,7 @@ public:
         else
             return 0;
     }
+
     bool get_bool(string name)
     {
         if(name_exist(name,"get")){
@@ -133,6 +139,7 @@ public:
         else
             return false;
     }
+
     float get_float(string name)
     {
         if(name_exist(name,"get")){
@@ -142,6 +149,7 @@ public:
         else
             return false;
     }
+
     vector <JsonPacket> get_array(string name)
     {
         vector <JsonPacket>  pa;
@@ -159,6 +167,7 @@ public:
         else
             return pa;
     }
+
 public:
     void clear()
     {
@@ -176,10 +185,12 @@ public:
         return val.asString();
 #endif
     }
+
     JsonValue &value()
     {
         return val;
     }
+
     bool is_null()
     {
         return val.isNull();
@@ -191,16 +202,19 @@ public:
         for(JsonPacket p:pkts)
             val[name].append(p.value());
     }
+
     void add(string name,JsonPacket pkt)
     {
         val[name].clear();
         val[name]=pkt.value();
     }
+
     template <typename T>
     void add(string name,T value)
     {
         val[name]=value;
     }
+
     template <typename T>
     void add(string name,vector<T> va)
     {
@@ -420,27 +434,7 @@ public:
         return config;
     }
 };
-class JsonDataWithTitle:public JsonData{
-private:
-    string title;
-public:
-    JsonDataWithTitle(JsonPacket pkt1,string tt):JsonData(pkt1.get(tt))
-    {
-        title=tt;
-    }
-    JsonDataWithTitle()
-    {
-    }
-    JsonDataWithTitle(string tt):title(tt)
-    {
 
-    }
-//    JsonPacket data()
-//    {
-//        JsonPacket pkt;
-//        pkt.set(title,config);
-//    }
-};
 template<typename TP>
 class VdData{
 protected:
@@ -462,45 +456,45 @@ public:
     }
 };
 
-#define DECODE_INT_MEM(mem) {this->mem=config.get(#mem).to_int();}
-#define DECODE_STRING_MEM(mem) {this->mem=config.get(#mem).to_string();}
-#define DECODE_DOUBLE_MEM(mem) {this->mem=config.get(#mem).to_double();}
-#define DECODE_BOOL_MEM(mem) {this->mem=config.get(#mem).to_bool();}
+#define DECODE_INT_MEM(mem) {try{this->mem=config.get(#mem).to_int();}catch(exception e){prt(info,"err in decoding mem");}}
+#define DECODE_STRING_MEM(mem) {try{this->mem=config.get(#mem).to_string();}catch(exception e){prt(info,"err in decoding mem");}}
+#define DECODE_DOUBLE_MEM(mem) {try{this->mem=config.get(#mem).to_double();}catch(exception e){prt(info,"err in decoding mem");}}
+#define DECODE_BOOL_MEM(mem) {try{this->mem=config.get(#mem).to_bool();}catch(exception e){prt(info,"err in decoding mem");}}
 
-#define DECODE_INT_ARRAY_MEM(mem) {this->mem=config.get(#mem).to_int_array();}
-#define DECODE_STRING_ARRAY_MEM(mem) {this->mem=config.get(#mem).to_string_array();}
-#define DECODE_DOUBLE_ARRAY_MEM(mem) {this->mem=config.get(#mem).to_double_array();}
-#define DECODE_BOOL_ARRAY_MEM(mem) {this->mem=config.get(#mem).to_bool_array();}
-
-
-#define DECODE_PKT_MEM(mem) {this->mem=config.get(#mem);}
-#define DECODE_PKT_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
-#define DECODE_JSONDATA_MEM(mem) {this->mem=config.get(#mem);}
-#define DECODE_JSONDATA_ARRAY_MEM(mem)  {auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}
-
-#define ENCODE_MEM(mem) {config.add(#mem,this->mem);}
-
-#define ENCODE_INT_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_STRING_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_DOUBLE_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_BOOL_MEM(mem) {ENCODE_MEM(mem);}
+#define DECODE_INT_ARRAY_MEM(mem) {try{this->mem=config.get(#mem).to_int_array();}catch(exception e){prt(info,"err in decoding mem");}}
+#define DECODE_STRING_ARRAY_MEM(mem) {try{this->mem=config.get(#mem).to_string_array();}catch(exception e){prt(info,"err in decoding mem");}}
+#define DECODE_DOUBLE_ARRAY_MEM(mem) {try{this->mem=config.get(#mem).to_double_array();}catch(exception e){prt(info,"err in decoding mem");}}
+#define DECODE_BOOL_ARRAY_MEM(mem) {try{this->mem=config.get(#mem).to_bool_array();}catch(exception e){prt(info,"err in decoding mem");}}
 
 
-#define ENCODE_INT_ARRAY_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_STRING_ARRAY_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_DOUBLE_ARRAY_MEM(mem) {ENCODE_MEM(mem);}
-#define ENCODE_BOOL_ARRAY_MEM(mem) {ENCODE_MEM(mem);}
+#define DECODE_PKT_MEM(mem) {try{this->mem=config.get(#mem);}catch(exception e){prt(info,"err in decoding mem");}}
+#define DECODE_PKT_ARRAY_MEM(mem)  {try{auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}catch(exception e){prt(info,"err in decoding mem");}}
+#define DECODE_JSONDATA_MEM(mem) {try{this->mem=config.get(#mem);}catch(exception e){prt(info,"err in decoding mem");}}
+#define DECODE_JSONDATA_ARRAY_MEM(mem)  {try{auto tmp=config.get(#mem).to_array();this->mem.assign(tmp.begin(),tmp.end());}catch(exception e){prt(info,"err in decoding mem");}}
+
+#define ENCODE_MEM(mem) {try{config.add(#mem,this->mem);}catch(exception e){prt(info,"err in decoding mem");}}
+
+#define ENCODE_INT_MEM(mem) {try{ENCODE_MEM(mem);}catch(exception e){prt(info,"err in decoding mem");}}
+#define ENCODE_STRING_MEM(mem) {try{ENCODE_MEM(mem);}catch(exception e){prt(info,"err in decoding mem");}}
+#define ENCODE_DOUBLE_MEM(mem) {try{ENCODE_MEM(mem);}catch(exception e){prt(info,"err in decoding mem");}}
+#define ENCODE_BOOL_MEM(mem) {try{ENCODE_MEM(mem);}catch(exception e){prt(info,"err in decoding mem");}}
 
 
-#define ENCODE_PKT_MEM(mem) {config.add(#mem,this->mem);}
-#define ENCODE_PKT_ARRAY_MEM(mem) {config.add(#mem,mem);}
-#define ENCODE_JSONDATA_MEM(mem) {config.add(#mem,this->mem.data());}
-#define ENCODE_JSONDATA_ARRAY_MEM(mem) { vector<JsonPacket> pkts;\
+#define ENCODE_INT_ARRAY_MEM(mem) {try{ENCODE_MEM(mem);}catch(exception e){prt(info,"err in decoding mem");}}
+#define ENCODE_STRING_ARRAY_MEM(mem) {try{ENCODE_MEM(mem);}catch(exception e){prt(info,"err in decoding mem");}}
+#define ENCODE_DOUBLE_ARRAY_MEM(mem) {try{ENCODE_MEM(mem);}catch(exception e){prt(info,"err in decoding mem");}}
+#define ENCODE_BOOL_ARRAY_MEM(mem) {try{ENCODE_MEM(mem);}
+
+
+#define ENCODE_PKT_MEM(mem) {try{config.add(#mem,this->mem);}catch(exception e){prt(info,"err in decoding mem");}}
+#define ENCODE_PKT_ARRAY_MEM(mem) {try{config.add(#mem,mem);}catch(exception e){prt(info,"err in decoding mem");}}
+#define ENCODE_JSONDATA_MEM(mem) {try{config.add(#mem,this->mem.data());}catch(exception e){prt(info,"err in decoding mem");}}
+#define ENCODE_JSONDATA_ARRAY_MEM(mem) {try{ vector<JsonPacket> pkts;\
     for(auto tmp1:this->mem){pkts.push_back(tmp1.data());}\
-    config.add(#mem,pkts);}
+    config.add(#mem,pkts);}catch(exception e){prt(info,"err in decoding mem");}}
 
 
-class RequestPkt:public JsonData
+class RequestPkt:public JsonObject
 {
 public:
     int Operation;
@@ -511,7 +505,7 @@ public:
     {
         encode();
     }
-    RequestPkt(JsonPacket p):JsonData(p)
+    RequestPkt(JsonPacket p):JsonObject(p)
     {
         decode();
     }
@@ -534,7 +528,7 @@ public:
     }
 
 };
-class ReplyPkt:public JsonData
+class ReplyPkt:public JsonObject
 {
 public:
     bool Ret;
@@ -548,7 +542,7 @@ public:
     {
 
     }
-    ReplyPkt(string ret):JsonData(ret)
+    ReplyPkt(string ret):JsonObject(ret)
     {
         decode();
     }
@@ -567,14 +561,14 @@ public:
 
 };
 
-class VdRect:public JsonData
+class VdRect:public JsonObject
 {
 public:
     int x;
     int y;
     int w;
     int h;
-    VdRect(JsonPacket pkt):JsonData(pkt)
+    VdRect(JsonPacket pkt):JsonObject(pkt)
     {
         decode();
     }
@@ -600,7 +594,7 @@ public:
     }
 
 };
-class ObjectRect:public JsonData
+class ObjectRect:public JsonObject
 {
 public:
     int x;
@@ -609,7 +603,7 @@ public:
     int h;
     string label;
     int confidence_rate;
-    ObjectRect(JsonPacket pkt):JsonData(pkt)
+    ObjectRect(JsonPacket pkt):JsonObject(pkt)
     {
         decode();
     }
@@ -638,12 +632,12 @@ public:
     }
 
 };
-class VdPoint:public JsonData
+class VdPoint:public JsonObject
 {
 public:
     int x;
     int y;
-    VdPoint(JsonPacket pkt):JsonData(pkt)
+    VdPoint(JsonPacket pkt):JsonObject(pkt)
     {
         decode();
     }
@@ -655,12 +649,6 @@ public:
     {
 
     }
-//    void    operator =(VdPoint p)
-//    {
-//        x=p.x;
-//        y=p.y;
-//        encode();
-//    }
     void decode()
     {
         DECODE_INT_MEM(x);
@@ -677,7 +665,7 @@ template <typename T>
 vector<JsonPacket> obj_2_pkt_array(T jd)
 {
     vector<JsonPacket> v;
-    for(JsonData d:jd){
+    for(JsonObject d:jd){
         v.push_back(d.data());
     }
     return v;
@@ -707,17 +695,10 @@ public:
         event_type=0;
         ori_pnt=VdPoint(0,0);
     }
-//    PaintableData(PaintableData &pd) {
-//        seizing=pd.seizing;
-//        point_index=pd.point_index;
-//        event_type=pd.event_type;
-//        ori_pnt=pd.ori_pnt;
-//    }
 public:
     inline int p_on_v(const vector <VdPoint> points,VdPoint p,int distance=10)
     {
         for(int i=0;i<points.size();i++){
-            //prt(info,"%d -> %d",points[i].x,p.x);
             if((abs(points[i].x-p.x)<distance)&&((abs(points[i].y-p.y))<distance)){
                 return (i+1);
             }
