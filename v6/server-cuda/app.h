@@ -11,7 +11,8 @@
 
 #define MAX_CAM_NUM 1000
 #define MAX_LANE_NUM 10000
-#define COUNT_SECONDS 5
+//#define COUNT_SECONDS 5
+#define COUNT_SECONDS 3600
 #define RECORD_SIZE 100
 class DatabaseInstance
 {
@@ -644,7 +645,7 @@ private:
         vector <lane_out_data> &laneout_count=lod[index-1];
         if(laneout.size()>0){
             if(laneout_count.size()==0){
-                prt(info,"handle a frame,first");
+             //   prt(info,"handle a frame,first");
 
                 m_lane_out_data first;
                 first.frames=0;
@@ -673,6 +674,7 @@ private:
                     laneout_count.push_back(first);
                 }
             }else{
+               //  prt(info,"handle a frame ,normal");
                 if(laneout.size()==laneout_count.size()){
                     for(int i=0;i<laneout.size();i++){
                         LaneOutputJsonData &tmp_data=laneout[i];
@@ -693,6 +695,8 @@ private:
                         tmp_data_count.old_exist=tmp_data_count.exist;
                         tmp_data_count.direction=tmp_data.LaneDirection;
 
+
+                        tmp_data_count.end_flow=tmp_data.VehicleFlow;
                         tmp_data_count.bus_flow_end=tmp_data.BusFlow;
                         tmp_data_count.truck_flow_end=tmp_data.TruckFlow;
                         tmp_data_count.car_flow_end=tmp_data.CarFlow;
@@ -999,12 +1003,13 @@ private:
 
         for(int j=0;j<lanesize;j++){
             m_lane_out_data &ld=lane_out_data[j];
+            LaneDataJsonData &lane=input.LaneData[j];
 
             prt(info,"do report1 : flow %d , timesum %d",ld.vehicle_count,ld.time_sum);
 
 
 
-            table.laneid="66";
+            table.laneid=int_2_string((j+1));
 
             table.vihicle_sum=int_2_string(0);
             table.ahead_sum=int_2_string(0);;
@@ -1117,8 +1122,190 @@ private:
 
         reset_laneout();
     }
+
+
+    inline void do_report2( MvdProcessorInputData &input,
+                            //               vector< MvdProcessorOutputData> & outputs,
+                            vector <vs_table> &tables,
+                            string sql_time,
+                            vector <m_lane_out_data> &lane_out_data,string url)
+    {
+        vs_table table;
+        table.record_id=int_2_string(999);
+        table.sql_time=sql_time;
+        table.period=int_2_string(COUNT_SECONDS);
+        table.a_id="66";
+        table.avenue=url;
+        table.cameraid=url;
+        prt(info,"do report1 ");
+
+        int lanesize=input.LaneData.size();
+
+        //        MvdProcessorOutputData begin=outputs.front();
+        //        MvdProcessorOutputData end=outputs.back();
+
+   //     prt(info,"error ");
+        int vihicle_sum=0;
+        int ahead_sum=0;
+        int rear_sum=0;
+
+        int truck_sum=0;
+        int bus_sum=0;
+        int car_sum=0;
+        int motor_sum=0;
+        int bicycle_sum=0;
+
+
+        int speed_sum=0;
+        int time_sum=0;
+        int space_sum=0;
+        int desity_sum=0;
+        int occupy_sum=0;
+     //   prt(info,"error ");
+
+        for(int j=0;j<lanesize;j++){
+          //  prt(info,"error ");
+            if(lane_out_data.size()!=lanesize){
+                  prt(info,"size %d ",lane_out_data.size());
+                  continue;
+            }
+                m_lane_out_data &ld=lane_out_data[j];
+
+          //  LaneDataJsonData &lane=input.LaneData[j];
+
+            prt(info,"do report1 : flow %d , timesum %d",ld.vehicle_count,ld.time_sum);
+
+
+
+            table.laneid=int_2_string((j+1));
+
+            table.vihicle_sum=int_2_string(0);
+            table.ahead_sum=int_2_string(0);;
+            table.rear_sum=int_2_string(0);;
+            table.truck_sum=int_2_string(0);;
+            table.bus_sum=int_2_string(0);;
+            table.car_sum=int_2_string(0);;
+            table.motor_sum=int_2_string(0);;
+            table.bicycle_sum=int_2_string(0);;
+            table.average_speed=int_2_string(0);;
+            table.average_time=int_2_string(0);;
+            table.average_space=int_2_string(0);;
+            table.average_desity=int_2_string(0);;
+            table.average_occupy=int_2_string(0);;
+            table.state=int_2_string(0);;
+
+
+            if(lane_out_data.size()<=j)
+                continue;
+            //            if(begin.LaneOutputData.size()<=j)
+            //                continue;
+            //            if(end.LaneOutputData.size()<=j)
+            //                continue;
+            //            LaneOutputJsonData tmp_begin=begin.LaneOutputData[j];
+            //            LaneOutputJsonData tmp_end=end.LaneOutputData[j];
+            //            vihicle_sum=tmp_end.VehicleFlow-tmp_begin.VehicleFlow;
+            //            if(!vihicle_sum){
+            //                tables.push_back(table);
+            //                continue;
+            //            }
+            //            ahead_sum=vihicle_sum;
+            //            rear_sum=0;
+
+            //            truck_sum=tmp_end.TruckFlow-tmp_begin.TruckFlow;
+            //            bus_sum=tmp_end.BusFlow-tmp_begin.BusFlow;
+            //            car_sum=tmp_end.CarFlow-tmp_begin.CarFlow;
+
+            //            motor_sum=tmp_end.MotorbikeFlow-tmp_begin.MotorbikeFlow;
+            //            bicycle_sum=tmp_end.BicycleFlow-tmp_begin.BicycleFlow;
+
+            //int exist=0;
+            //            for(int i=0;i<outputs.size();i++){
+            //                MvdProcessorOutputData o= outputs[i];
+            //                LaneOutputJsonData l=o.LaneOutputData[j];
+            //                speed_sum+=l.VehicleSpeed;
+            //                time_sum+=l.VehicleHeadtime;
+            //                space_sum+=l.VehicleDensity;
+            //                desity_sum+=l.VehicleDensity;
+            //                if(l.NearCarExist){
+            //                    exist++;
+            //                }
+            //                if(l.LaneDirection){
+            //                    ahead_sum=vihicle_sum;
+            //                    rear_sum=0;
+            //                }else{
+            //                    ahead_sum=0;
+            //                    rear_sum=vihicle_sum;
+            //                }
+            //            }
+
+            truck_sum=(ld.truck_flow_end-ld.truck_flow_begin);
+            if(truck_sum<0){truck_sum=0;prt(info,"warning , get invid flow");}
+            bus_sum=ld.bus_flow_end-ld.bus_flow_begin;
+               if(bus_sum<0){bus_sum=0;prt(info,"warning , get invid flow");}
+            car_sum=ld.car_flow_end-ld.car_flow_begin;
+            if(car_sum<0){car_sum=0;prt(info,"warning , get invid flow");}
+
+            motor_sum=ld.moto_end-ld.moto_begin;
+            if(motor_sum<0){motor_sum=0;prt(info,"warning , get invid flow");}
+
+            bicycle_sum=ld.bicycle_end-ld.bicycle_begin;
+            if(bicycle_sum<0){bicycle_sum=0;prt(info,"warning , get invid flow");}
+
+          //  vihicle_sum=ld.vehicle_count;
+            vihicle_sum=  ld.end_flow-ld.begin_flow-motor_sum-bicycle_sum;
+            if(vihicle_sum<0){vihicle_sum=0;prt(info,"warning , get invid flow");}
+
+           // if(ld.direction){
+            if(true){
+                ahead_sum=vihicle_sum;
+                rear_sum=0;
+            }else{
+                ahead_sum=0;
+                rear_sum=vihicle_sum;
+            }
+            time_sum=ld.time_sum;
+            speed_sum=ld.speed_sum;
+
+
+
+            table.vihicle_sum=int_2_string(vihicle_sum);
+            table.ahead_sum=int_2_string(ahead_sum);
+            table.rear_sum=int_2_string(rear_sum);
+            table.truck_sum=int_2_string(truck_sum);
+            table.bus_sum=int_2_string(bus_sum);
+            table.car_sum=int_2_string(car_sum);
+            table.motor_sum=int_2_string(motor_sum);
+            table.bicycle_sum=int_2_string(bicycle_sum);
+
+         //   prt(info,"error ");
+
+            if(vihicle_sum>1){
+                table.average_time=int_2_string(time_sum/vihicle_sum);
+            }
+
+            if(vihicle_sum>0){
+                table.average_speed=int_2_string(speed_sum/vihicle_sum);
+                table.average_space=int_2_string((speed_sum/vihicle_sum*1000)/3600*(time_sum/vihicle_sum));
+                prt(info,"count %d, time %d  speed %d",vihicle_sum,time_sum,speed_sum);
+            }
+
+            //            table.average_speed=int_2_string(speed_sum/outputs.size());
+            //            table.average_time=int_2_string(time_sum/outputs.size());
+            //            table.average_space=int_2_string(space_sum/outputs.size());
+
+            //            table.average_desity=int_2_string(desity_sum/outputs.size());
+            //            table.average_occupy=int_2_string(exist*100/outputs.size());
+
+            table.state=int_2_string(1);
+            tables.push_back(table);
+        }
+
+        reset_laneout();
+    }
+
     void flow_thread()
     {
+//        return ;
 
         int count_time=COUNT_SECONDS;//10s
         int car_count[MAX_LANE_NUM];
@@ -1167,7 +1354,7 @@ private:
 
                     flow_lock.lock();
                     // do_report(mvddata,cam_out,tables,sql_time);
-                    do_report1(mvddata,tables,sql_time,lod[loop_cams]);
+                    do_report2(mvddata,tables,sql_time,lod[loop_cams],cd.Url);
                     flow_lock.unlock();
 
                     prt(info,"liuliang :table %d",tables.size());
