@@ -11,7 +11,7 @@
 
 #define MAX_CAM_NUM 1000
 #define MAX_LANE_NUM 10000
-//#define COUNT_SECONDS 5
+//#define COUNT_SECONDS 15
 #define COUNT_SECONDS 3600
 #define RECORD_SIZE 100
 class DatabaseInstance
@@ -617,6 +617,10 @@ private:
 
         int time_sum;
 
+        int time_in;
+        int time_out;
+        int time_exist;
+
         int begin_flow;
         int end_flow;
 
@@ -639,7 +643,7 @@ private:
     vector <m_lane_out_data> lod[MAX_CAM_NUM];
     void handle_frame(MvdProcessorOutputData data,int index)
     {
-       // prt(info,"handle a frame");
+       prt(info,"handle a frame");
         //data.LaneOutputData;
         vector <LaneOutputJsonData> &laneout=data.LaneOutputData;
         vector <lane_out_data> &laneout_count=lod[index-1];
@@ -684,13 +688,31 @@ private:
 
                         tmp_data_count.exist=tmp_data.NearCarExist;
                         if(tmp_data_count.exist&&!(tmp_data_count.old_exist)){
-                            if(tmp_data_count.vehicle_count>=1)
+                            if(tmp_data_count.vehicle_count>=1){
+
+
+                                tmp_data_count.timepoint=get_time_point_ms()/1000;
+                                prt(info,"################enter timepoint   %d ",tmp_data_count.timepoint);
+                                tmp_data_count.time_in= tmp_data_count.timepoint;
                                 tmp_data_count.time_sum+=(tmp_data_count.timepoint-tmp_data_count.old_timepoint);
+                                prt(info,"################time dis   %d ",(tmp_data_count.timepoint-tmp_data_count.old_timepoint));
+
+                                tmp_data_count.old_timepoint=tmp_data_count.timepoint;
+
+                                   }
                             tmp_data_count.vehicle_count++;
                             tmp_data_count.speed_sum+=tmp_data.VehicleSpeed;
                             prt(info,"################speed  %d ",tmp_data.VehicleSpeed);
                         }
-
+                        if(!(tmp_data_count.exist)&&(tmp_data_count.old_exist)){
+                            if(tmp_data_count.vehicle_count>=1){
+                                tmp_data_count.time_out=get_time_point_ms()/1000;
+                                if(tmp_data_count.time_out>tmp_data_count.time_in&&tmp_data_count.time_in){
+                                    tmp_data_count.time_exist+=(tmp_data_count.time_out-tmp_data_count.time_in);
+                                 prt(info,"#########in out#######   %d  %d ",tmp_data_count.time_out,tmp_data_count.time_in);
+                                }
+                            }
+                        }
 
                         tmp_data_count.old_exist=tmp_data_count.exist;
                         tmp_data_count.direction=tmp_data.LaneDirection;
@@ -1101,7 +1123,7 @@ private:
 
 
             if(ld.vehicle_count>1){
-                table.average_time=int_2_string(time_sum/ld.vehicle_count);
+                table.average_time=int_2_string(time_sum/(ld.vehicle_count-1));
             }
 
             if(ld.vehicle_count>0){
@@ -1253,6 +1275,13 @@ private:
 
           //  vihicle_sum=ld.vehicle_count;
             vihicle_sum=  ld.end_flow-ld.begin_flow-motor_sum-bicycle_sum;
+
+            occupy_sum=ld.time_exist*100/COUNT_SECONDS;
+
+            prt(info,"ocupytime %d ",occupy_sum);
+            if(occupy_sum<0)occupy_sum=0;
+            if(occupy_sum>100)occupy_sum=occupy_sum%100;
+
             if(vihicle_sum<0){vihicle_sum=0;prt(info,"warning , get invid flow");}
 
            // if(ld.direction){
@@ -1276,6 +1305,7 @@ private:
             table.car_sum=int_2_string(car_sum);
             table.motor_sum=int_2_string(motor_sum);
             table.bicycle_sum=int_2_string(bicycle_sum);
+            table.average_occupy=int_2_string(occupy_sum);
 
          //   prt(info,"error ");
 
